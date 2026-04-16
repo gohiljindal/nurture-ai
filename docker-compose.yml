@@ -1,0 +1,32 @@
+# Local PostgreSQL only (Task 1). Next.js still runs on your machine with `npm run dev`.
+#
+# From this folder (project root):
+#   docker compose up -d     # start in the background
+#   docker compose ps        # status
+#   docker compose logs -f db  # follow logs
+#   docker compose down      # stop (data is kept in the volume below)
+#   docker compose down -v   # stop AND delete data — only when you want a clean DB
+#
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: nurtureai-postgres
+    restart: unless-stopped
+    ports:
+      # "host:container" — tools on your PC use localhost and the host port (left number)
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: nurture
+      POSTGRES_PASSWORD: nurture_dev_local
+      POSTGRES_DB: nurtureai
+    volumes:
+      # Persists data across restarts; survives `docker compose down` (without `-v`)
+      - nurtureai_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U nurture -d nurtureai"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  nurtureai_pgdata:

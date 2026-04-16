@@ -7,7 +7,7 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-sans);
+  --font-sans: var(--font-plus-jakarta-sans);
   --font-mono: var(--font-geist-mono);
   --font-heading: var(--font-sans);
   --color-sidebar-ring: var(--sidebar-ring);
@@ -49,14 +49,15 @@
 }
 
 :root {
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
+  /* Neumorphic soft UI: slate canvas, violet→blue primary */
+  --background: oklch(0.985 0.004 250);
+  --foreground: oklch(0.22 0.02 260);
   --card: oklch(1 0 0);
   --card-foreground: oklch(0.145 0 0);
   --popover: oklch(1 0 0);
   --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
-  --primary-foreground: oklch(0.985 0 0);
+  --primary: oklch(0.55 0.22 285);
+  --primary-foreground: oklch(0.99 0 0);
   --secondary: oklch(0.97 0 0);
   --secondary-foreground: oklch(0.205 0 0);
   --muted: oklch(0.97 0 0);
@@ -126,5 +127,46 @@
   }
   html {
     @apply font-sans;
+  }
+  h1,
+  h2,
+  h3 {
+    font-family: var(--font-plus-jakarta-sans), ui-sans-serif, system-ui, sans-serif;
+    @apply font-bold tracking-tight text-slate-900;
+  }
+}
+
+/* NurtureAI — Neumorphic: #f8fafc canvas, violet→blue gradient CTAs */
+@layer components {
+  .nurture-hero {
+    @apply rounded-[1.75rem] bg-gradient-to-br from-violet-50 via-white to-sky-50 px-5 py-8 shadow-[0_10px_40px_rgba(15,23,42,0.06)] ring-1 ring-violet-100/80 sm:px-10 sm:py-12;
+  }
+  .nurture-card {
+    @apply rounded-[1.75rem] border border-slate-200/90 bg-white p-5 shadow-[0_10px_25px_rgba(15,23,42,0.05)] sm:p-6;
+  }
+  .nurture-card-muted {
+    @apply rounded-[1.75rem] border border-slate-200/80 bg-slate-50/60 p-5 shadow-sm sm:p-6;
+  }
+  .btn-nurture-primary {
+    @apply inline-flex min-h-11 items-center justify-center rounded-2xl bg-gradient-to-r from-violet-600 to-blue-500 px-4 py-2.5 text-sm font-semibold text-white shadow-[0_8px_24px_rgba(91,33,182,0.22)] transition hover:opacity-95 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-violet-500 disabled:opacity-50;
+  }
+  .btn-nurture-primary-lg {
+    @apply inline-flex min-h-12 w-full items-center justify-center rounded-2xl bg-gradient-to-r from-violet-600 to-blue-500 px-4 py-3 text-base font-semibold text-white shadow-[0_8px_24px_rgba(91,33,182,0.22)] transition hover:opacity-95 disabled:opacity-50 sm:w-auto;
+  }
+  .btn-nurture-secondary {
+    @apply inline-flex min-h-11 items-center justify-center rounded-2xl border-2 border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-800 shadow-sm transition hover:bg-slate-50;
+  }
+  .nurture-page {
+    @apply min-h-[calc(100vh-8rem)] bg-[#f8fafc] px-4 py-6 sm:py-10;
+  }
+  .nurture-input {
+    @apply w-full rounded-2xl border-2 border-slate-200 bg-white px-4 py-3 text-slate-900 placeholder:text-slate-400 focus:border-violet-400 focus:outline-none focus:ring-2 focus:ring-violet-400/25;
+  }
+  /** Full-height routes (milestones, vaccines, feeding shell, etc.) */
+  .nurture-app-bg {
+    @apply min-h-screen bg-[#f8fafc];
+  }
+  .nurture-text-link {
+    @apply font-semibold text-violet-700 underline-offset-2 hover:text-violet-900 hover:underline;
   }
 }

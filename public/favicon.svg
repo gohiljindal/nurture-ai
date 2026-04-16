@@ -1,0 +1,13 @@
+<svg width="200" height="200" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="nurtureFaviconGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#7c3aed"/>
+      <stop offset="100%" stop-color="#3b82f6"/>
+    </linearGradient>
+  </defs>
+  <rect width="200" height="200" rx="44" fill="url(#nurtureFaviconGrad)"/>
+  <path d="M 78,44 C 36,62 36,138 78,156" fill="none" stroke="white" stroke-width="14" stroke-linecap="round"/>
+  <path d="M 122,44 C 164,62 164,138 122,156" fill="none" stroke="white" stroke-width="14" stroke-linecap="round"/>
+  <circle cx="100" cy="100" r="22" fill="white"/>
+  <path d="M 100,110 C 92,105 86,99 87,93 C 88,88 94,87 100,93 C 106,87 112,88 113,93 C 114,99 108,105 100,110 Z" fill="#c4b5fd"/>
+</svg>

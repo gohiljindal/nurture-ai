@@ -1,6 +1,7 @@
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
 # dependencies
+node_modules/
 /node_modules
 /.pnp
 .pnp.*
@@ -17,12 +18,17 @@
 /.next/
 /out/
 
+# Expo / React Native (apps/mobile)
+.expo/
+dist/
+
 # production
 /build
 
 # misc
 .DS_Store
 *.pem
+anthro.tgz
 
 # debug
 npm-debug.log*
@@ -30,8 +36,9 @@ yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
 
-# env files (can opt-in for committing if needed)
-.env*
+# env — never commit secrets; copy `.env.example` → `.env` or `.env.local` locally
+.env
+.env*.local
 
 # vercel
 .vercel

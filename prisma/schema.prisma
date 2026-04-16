@@ -1,0 +1,175 @@
+// NurtureAI — Prisma + PostgreSQL
+// Task 2: DATABASE_URL in `.env` / `.env.local`; `npm run db:generate`, `npm run db:deploy`.
+// Task 3 (MVP): `users` → `children` → `symptom_checks`, plus optional `symptom_check_feedback`
+// (thumbs up/down on a triage run — aligns with `app/api/symptom-feedback`).
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+/// MVP: one row per logged-in user; `id` matches Supabase `auth.users.id` for FK consistency.
+model User {
+  id        String   @id @db.Uuid
+  email     String?
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  children              Child[]
+  symptomChecks         SymptomCheck[]
+  symptomCheckFeedbacks SymptomCheckFeedback[]
+
+  @@map("users")
+}
+
+/// MVP: child profile for triage and dashboards.
+model Child {
+  id                  String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId              String   @map("user_id") @db.Uuid
+  name                String
+  photoUrl            String?  @map("photo_url")
+  dateOfBirth         DateTime @map("date_of_birth") @db.Date
+  sexAtBirth          String?  @map("sex_at_birth")
+  isPremature         Boolean  @default(false) @map("is_premature")
+  gestationalAgeWeeks Int?     @map("gestational_age_weeks")
+  province            String?
+  createdAt           DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  user               User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  symptomChecks      SymptomCheck[]
+  childVaccines      ChildVaccine[]
+  growthMeasurements GrowthMeasurement[]
+  childMilestones    ChildMilestone[]
+
+  @@index([userId])
+  @@map("children")
+}
+
+/// Reference milestone definitions (seeded; aligns with supabase/migrations/20240201_milestones.sql).
+model MilestoneDefinition {
+  id                  String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  domain              String
+  ageMonthsMin        Int      @map("age_months_min")
+  ageMonthsMax        Int      @map("age_months_max")
+  ageMonthsAvg        Int      @map("age_months_avg")
+  title               String
+  description         String
+  whyItMatters        String   @map("why_it_matters")
+  whatToDoIfDelayed   String   @map("what_to_do_if_delayed")
+  redFlag             Boolean  @default(false) @map("red_flag")
+  source              String?  @default("AAP/WHO 2023")
+  prematureNotes      String?  @map("premature_notes")
+  sortOrder           Int      @default(0) @map("sort_order")
+  createdAt           DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  childMilestones ChildMilestone[]
+
+  @@index([domain, ageMonthsMin])
+  @@map("milestone_definitions")
+}
+
+/// Per-child milestone progress.
+model ChildMilestone {
+  id          String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  childId     String    @map("child_id") @db.Uuid
+  milestoneId String    @map("milestone_id") @db.Uuid
+  status      String    @default("pending")
+  achievedAt  DateTime? @map("achieved_at") @db.Date
+  notes       String?
+  createdAt   DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt   DateTime  @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  child     Child               @relation(fields: [childId], references: [id], onDelete: Cascade)
+  milestone MilestoneDefinition @relation(fields: [milestoneId], references: [id], onDelete: Cascade)
+
+  @@unique([childId, milestoneId])
+  @@index([childId])
+  @@map("child_milestones")
+}
+
+/// Parent-entered growth measurements (same shape as supabase/migrations/20240202_growth.sql).
+model GrowthMeasurement {
+  id         String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  childId    String    @map("child_id") @db.Uuid
+  measuredAt DateTime  @map("measured_at") @db.Date
+  weightKg   Decimal?  @map("weight_kg") @db.Decimal(5, 3)
+  heightCm   Decimal?  @map("height_cm") @db.Decimal(5, 1)
+  headCm     Decimal?  @map("head_cm") @db.Decimal(5, 1)
+  notes      String?
+  createdAt  DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt  DateTime  @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  child Child @relation(fields: [childId], references: [id], onDelete: Cascade)
+
+  @@index([childId])
+  @@index([childId, measuredAt])
+  @@map("growth_measurements")
+}
+
+/// Parent-recorded immunizations (vaccine preview / schedule UI).
+model ChildVaccine {
+  id             String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  childId        String    @map("child_id") @db.Uuid
+  vaccineCode    String    @map("vaccine_code")
+  vaccineName    String    @map("vaccine_name")
+  province       String
+  scheduledDate  DateTime? @map("scheduled_date") @db.Date
+  administeredAt DateTime? @map("administered_at") @db.Date
+  administeredBy String?   @map("administered_by")
+  lotNumber      String?   @map("lot_number")
+  notes          String?
+  isOverdue      Boolean   @default(false) @map("is_overdue")
+  createdAt      DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt      DateTime  @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  child Child @relation(fields: [childId], references: [id], onDelete: Cascade)
+
+  @@index([childId])
+  @@index([childId, province])
+  @@map("child_vaccines")
+}
+
+/// MVP: one saved symptom triage. `urgency` is typically `emergency` | `urgent_doctor` | `monitor_home` (see triage API).
+model SymptomCheck {
+  id                 String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId             String   @map("user_id") @db.Uuid
+  childId            String   @map("child_id") @db.Uuid
+  inputText          String   @map("input_text")
+  urgency            String
+  aiResponse         Json     @map("ai_response")
+  createdAt          DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  disclaimerAccepted Boolean  @default(false) @map("disclaimer_accepted")
+  modelUsed          String?  @map("model_used")
+  flowVersion        String?  @map("flow_version")
+  followupCount      Int?     @map("followup_count")
+  decisionSource     String?  @map("decision_source")
+  ruleReason         String?  @map("rule_reason")
+
+  user      User                   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  child     Child                  @relation(fields: [childId], references: [id], onDelete: Cascade)
+  feedbacks SymptomCheckFeedback[]
+
+  @@index([userId])
+  @@index([childId])
+  @@index([createdAt(sort: Desc)])
+  @@map("symptom_checks")
+}
+
+/// MVP: optional helpful / not helpful on a triage run (`symptom-feedback` API). One row per user per check.
+model SymptomCheckFeedback {
+  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId    String   @map("user_id") @db.Uuid
+  checkId   String   @map("check_id") @db.Uuid
+  helpful   Boolean
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  user  User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  check SymptomCheck @relation(fields: [checkId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, checkId])
+  @@index([checkId])
+  @@map("symptom_check_feedback")
+}
