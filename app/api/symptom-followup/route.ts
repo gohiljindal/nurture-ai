@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { getOpenAI, type OpenAiResponsesCreateResult } from "@/lib/openai";
+import type { OpenAiResponsesCreateResult } from "@/lib/openai";
 import { calculateAgeInMonths } from "@/lib/child-age";
 import { correlationHeaders, getOrCreateRequestId } from "@/lib/request-correlation";
 import { createSymptomWorkflowObserver } from "@/lib/symptom-workflow-observability";
@@ -10,6 +10,8 @@ import type { SymptomTriageResult } from "@/lib/symptom-triage-result";
 import { formatZodError, symptomFollowupBodySchema } from "@/lib/validation/api-schemas";
 import { runSafetyRules } from "@/lib/safety-rules";
 import { symptomRateLimit } from "@/lib/ratelimit";
+
+export const dynamic = "force-dynamic";
 
 const OPENAI_FOLLOWUP_TIMEOUT_MS = 15_000;
 
@@ -172,6 +174,15 @@ Parent concern:
 ${symptomText}
 `;
 
+    if (!process.env.OPENAI_API_KEY?.trim()) {
+      obs.set({ httpStatus: 503, errorCode: "openai_not_configured" });
+      return NextResponse.json(
+        { error: "AI is not configured on this server." },
+        { status: 503, headers: correlationHeaders(requestId) }
+      );
+    }
+
+    const { getOpenAI } = await import("@/lib/openai");
     const openai = await getOpenAI();
     const openAiPromise = openai.responses.create({
       model: "gpt-5-mini",

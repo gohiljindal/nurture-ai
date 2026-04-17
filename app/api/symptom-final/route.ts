@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { getOpenAI, type OpenAiResponsesCreateResult } from "@/lib/openai";
+import type { OpenAiResponsesCreateResult } from "@/lib/openai";
 import { calculateAgeInMonths } from "@/lib/child-age";
 import { correlationHeaders, getOrCreateRequestId } from "@/lib/request-correlation";
 import { createSymptomWorkflowObserver } from "@/lib/symptom-workflow-observability";
@@ -15,6 +15,8 @@ import {
 } from "@/lib/safety-rules";
 import { symptomRateLimit } from "@/lib/ratelimit";
 import type { SymptomTriageCore, SymptomTriageResult } from "@/lib/symptom-triage-result";
+
+export const dynamic = "force-dynamic";
 
 const OPENAI_FINAL_TIMEOUT_MS = 15_000;
 
@@ -203,6 +205,15 @@ Output rules:
 - If urgency is "emergency" or "urgent_doctor", recommended_action must clearly tell the parent to seek emergency or in-person medical care now (or today), using plain language
 `;
 
+    if (!process.env.OPENAI_API_KEY?.trim()) {
+      obs.set({ httpStatus: 503, errorCode: "openai_not_configured" });
+      return NextResponse.json(
+        { error: "AI is not configured on this server." },
+        { status: 503, headers: correlationHeaders(requestId) }
+      );
+    }
+
+    const { getOpenAI } = await import("@/lib/openai");
     const openai = await getOpenAI();
     const openAiPromise = openai.responses.create({
       model: "gpt-5-mini",
