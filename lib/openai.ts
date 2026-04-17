@@ -1,10 +1,15 @@
-import OpenAI from "openai";
+import type OpenAI from "openai";
 
 let client: OpenAI | null = null;
 
-export function getOpenAI(): OpenAI {
+/**
+ * Loads the OpenAI SDK only when a route handler runs (dynamic import).
+ * Avoids `next build` / page-data collection failing when OPENAI_API_KEY is unset.
+ */
+export async function getOpenAI(): Promise<OpenAI> {
   if (!client) {
-    client = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+    const { default: OpenAIClient } = await import("openai");
+    client = new OpenAIClient({ apiKey: process.env.OPENAI_API_KEY });
   }
   return client;
 }

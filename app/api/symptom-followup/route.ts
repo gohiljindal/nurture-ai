@@ -172,7 +172,8 @@ Parent concern:
 ${symptomText}
 `;
 
-    const openAiPromise = getOpenAI().responses.create({
+    const openai = await getOpenAI();
+    const openAiPromise = openai.responses.create({
       model: "gpt-5-mini",
       input,
       text: {

@@ -203,7 +203,8 @@ Output rules:
 - If urgency is "emergency" or "urgent_doctor", recommended_action must clearly tell the parent to seek emergency or in-person medical care now (or today), using plain language
 `;
 
-    const openAiPromise = getOpenAI().responses.create({
+    const openai = await getOpenAI();
+    const openAiPromise = openai.responses.create({
       model: "gpt-5-mini",
       input,
       text: {
