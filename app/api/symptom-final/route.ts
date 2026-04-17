@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { openai } from "@/lib/openai";
+import { getOpenAI, type OpenAiResponsesCreateResult } from "@/lib/openai";
 import { calculateAgeInMonths } from "@/lib/child-age";
 import { correlationHeaders, getOrCreateRequestId } from "@/lib/request-correlation";
 import { createSymptomWorkflowObserver } from "@/lib/symptom-workflow-observability";
@@ -17,12 +17,6 @@ import { symptomRateLimit } from "@/lib/ratelimit";
 import type { SymptomTriageCore, SymptomTriageResult } from "@/lib/symptom-triage-result";
 
 const OPENAI_FINAL_TIMEOUT_MS = 15_000;
-
-/** Non-streaming response from `responses.create` (excludes `Stream` union member). */
-type OpenAiResponsesCreateResult = Extract<
-  Awaited<ReturnType<typeof openai.responses.create>>,
-  { output: unknown }
->;
 
 function extractOutputJsonText(response: {
   output: Array<{ type: string; content?: Array<{ type: string; text?: string }> }>;
@@ -209,7 +203,7 @@ Output rules:
 - If urgency is "emergency" or "urgent_doctor", recommended_action must clearly tell the parent to seek emergency or in-person medical care now (or today), using plain language
 `;
 
-    const openAiPromise = openai.responses.create({
+    const openAiPromise = getOpenAI().responses.create({
       model: "gpt-5-mini",
       input,
       text: {

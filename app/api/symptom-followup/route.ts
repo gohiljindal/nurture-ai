@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { openai } from "@/lib/openai";
+import { getOpenAI, type OpenAiResponsesCreateResult } from "@/lib/openai";
 import { calculateAgeInMonths } from "@/lib/child-age";
 import { correlationHeaders, getOrCreateRequestId } from "@/lib/request-correlation";
 import { createSymptomWorkflowObserver } from "@/lib/symptom-workflow-observability";
@@ -12,12 +12,6 @@ import { runSafetyRules } from "@/lib/safety-rules";
 import { symptomRateLimit } from "@/lib/ratelimit";
 
 const OPENAI_FOLLOWUP_TIMEOUT_MS = 15_000;
-
-/** Non-streaming response from `responses.create` (excludes `Stream` union member). */
-type OpenAiResponsesCreateResult = Extract<
-  Awaited<ReturnType<typeof openai.responses.create>>,
-  { output: unknown }
->;
 
 type FollowupResult = {
   questions: string[];
@@ -178,7 +172,7 @@ Parent concern:
 ${symptomText}
 `;
 
-    const openAiPromise = openai.responses.create({
+    const openAiPromise = getOpenAI().responses.create({
       model: "gpt-5-mini",
       input,
       text: {
