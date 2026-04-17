@@ -6,9 +6,7 @@ export default function LoginPage() {
     <main className="nurture-page flex min-h-screen items-center justify-center">
       <Suspense
         fallback={
-          <div className="w-full max-w-md rounded-2xl border p-8 text-center text-gray-600">
-            Loading…
-          </div>
+          <div className="nurture-card w-full max-w-md p-8 text-center text-slate-600">Loading…</div>
         }
       >
         <LoginForm />

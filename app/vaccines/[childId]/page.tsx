@@ -493,8 +493,8 @@ export default function VaccinesPage() {
   const { child, stats, province_info, next_vaccine, overdue } = data;
 
   return (
-    <div className="min-h-screen bg-slate-50 pb-24">
-      <header className="sticky top-0 z-20 border-b border-slate-200/80 bg-[#f8fafc]/95 backdrop-blur">
+    <div className="nurture-app-bg pb-24">
+      <header className="sticky top-0 z-20 border-b border-slate-200/80 bg-[#f9fafb]/95 backdrop-blur">
         <div className="mx-auto flex max-w-3xl flex-wrap items-center gap-3 px-4 py-3">
           <Link
             href={`/child/${childId}`}

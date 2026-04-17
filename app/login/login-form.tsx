@@ -43,7 +43,8 @@ export default function LoginForm() {
       onSubmit={handleLogin}
       className="nurture-card w-full max-w-md space-y-4"
     >
-      <h1 className="text-2xl text-slate-900">Log in</h1>
+      <p className="nurture-kicker">Welcome back</p>
+      <h1 className="mt-2 text-2xl font-bold text-slate-900">Log in</h1>
 
       {registered ? (
         <p className="rounded-2xl border border-violet-200/80 bg-violet-50 px-3 py-2 text-sm text-violet-950">

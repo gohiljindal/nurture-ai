@@ -75,12 +75,10 @@ export default async function DashboardPage() {
 
   return (
     <main className="nurture-page mx-auto max-w-5xl">
-      <div className="nurture-hero mb-8 sm:mb-10">
+      <div className="nurture-hero-solid mb-8 sm:mb-10">
         <div className="flex flex-col gap-5 sm:flex-row sm:items-start sm:justify-between sm:gap-6">
           <div className="min-w-0">
-            <p className="text-xs font-semibold uppercase tracking-widest text-violet-700/85">
-              Today
-            </p>
+            <p className="nurture-kicker">Today</p>
             <h1 className="mt-2 text-2xl leading-tight text-slate-900 sm:text-4xl">
               🏠 Your parenting hub
             </h1>
@@ -120,7 +118,7 @@ export default async function DashboardPage() {
           <p className="mt-1 text-sm text-slate-700">
             For {youngest?.name} · {expectation.ageRangeLabel}
           </p>
-          <ul className="mt-4 space-y-2 text-sm text-gray-800">
+          <ul className="mt-4 space-y-2 text-sm text-slate-800">
             {highlights.map((line, i) => (
               <li key={i} className="flex gap-2">
                 <span className="font-medium text-violet-600">✓</span>
@@ -141,7 +139,7 @@ export default async function DashboardPage() {
               <p className="mt-1 text-sm text-amber-950">{watchOne}</p>
             </div>
           ) : null}
-          <p className="mt-3 text-xs text-gray-500">
+          <p className="mt-3 text-xs text-slate-500">
             General patterns for this age—not medical advice. Call your clinician or emergency
             services if you are worried.
           </p>
@@ -156,8 +154,8 @@ export default async function DashboardPage() {
         )}
 
         {childSummaries.length === 0 ? (
-          <div className="rounded-[1.75rem] border-2 border-dashed border-amber-300/80 bg-gradient-to-br from-amber-50/80 to-rose-50/40 p-6 text-center shadow-sm sm:p-8">
-            <h3 className="text-lg font-semibold text-gray-900">
+          <div className="nurture-empty-dashed">
+            <h3 className="text-lg font-semibold text-slate-900">
               Add your child to get started
             </h3>
             <p className="mt-2 text-sm text-gray-600">
@@ -207,7 +205,7 @@ export default async function DashboardPage() {
                         )}
                       </Link>
 
-                      <div className="mt-4 rounded-xl bg-gray-50 p-4">
+                      <div className="mt-4 rounded-xl bg-slate-50 p-4">
                         <p className="text-sm font-semibold">Vaccine preview</p>
 
                         {s.vaccine_records_count > 0 ? (
@@ -220,7 +218,7 @@ export default async function DashboardPage() {
 
                         {nextVaccine ? (
                           <>
-                            <p className="mt-1 text-sm text-gray-800">{nextVaccine.label}</p>
+                            <p className="mt-1 text-sm text-slate-800">{nextVaccine.label}</p>
                             <p className="mt-1 text-sm text-gray-600">{nextVaccine.description}</p>
                           </>
                         ) : (
@@ -260,13 +258,13 @@ export default async function DashboardPage() {
         </div>
 
         {!symptomChecks || symptomChecks.length === 0 ? (
-          <div className="rounded-2xl border border-gray-200 bg-gray-50/80 p-6 text-center sm:p-8">
+          <div className="nurture-panel-muted">
             {childSummaries.length === 0 ? (
               <>
-                <p className="text-base font-medium text-gray-900">
+                <p className="text-base font-medium text-slate-900">
                   Add a child profile to run symptom checks
                 </p>
-                <p className="mt-2 text-sm text-gray-600">
+                <p className="mt-2 text-sm text-slate-600">
                   Your recent checks will show up here.
                 </p>
                 <Link
@@ -278,10 +276,10 @@ export default async function DashboardPage() {
               </>
             ) : (
               <>
-                <p className="text-base font-medium text-gray-900">
+                <p className="text-base font-medium text-slate-900">
                   Start your first symptom check to get guidance for your child
                 </p>
-                <p className="mt-2 text-sm text-gray-600">
+                <p className="mt-2 text-sm text-slate-600">
                   Describe what you are seeing. We will ask a few follow-up questions when needed.
                 </p>
                 <div className="mt-6 flex justify-center">
@@ -309,7 +307,7 @@ export default async function DashboardPage() {
                   </span>
                 </div>
 
-                <p className="mt-3 line-clamp-2 text-sm text-gray-700">{check.input_text}</p>
+                <p className="mt-3 line-clamp-2 text-sm text-slate-700">{check.input_text}</p>
 
                 {check.triage.decision_source === "safety_rule" && (
                   <p className="mt-2 text-xs text-violet-700">
@@ -317,7 +315,7 @@ export default async function DashboardPage() {
                   </p>
                 )}
 
-                <p className="mt-2 text-xs text-gray-500">
+                <p className="mt-2 text-xs text-slate-500">
                   {new Date(check.created_at).toLocaleString()}
                 </p>
               </Link>

@@ -134,11 +134,14 @@ export default function AddChildPage() {
 
   return (
     <main className="nurture-page mx-auto max-w-xl">
-      <h1 className="mb-2 text-2xl text-slate-900 sm:text-3xl">👶 Add a child</h1>
-      <p className="mb-6 text-sm leading-relaxed text-slate-600 sm:mb-8">
-        We use age to tailor symptom checks and guidance—same caring flow as your parenting
-        journey.
-      </p>
+      <div className="nurture-hero-solid mb-6 sm:mb-8">
+        <p className="nurture-kicker">Profile</p>
+        <h1 className="mt-2 text-2xl font-bold text-slate-900 sm:text-3xl">👶 Add a child</h1>
+        <p className="mt-2 text-sm leading-relaxed text-slate-600">
+          We use age to tailor symptom checks and guidance—same caring flow as your parenting
+          journey.
+        </p>
+      </div>
 
       <form onSubmit={handleSubmit} className="nurture-card space-y-5">
         <div>

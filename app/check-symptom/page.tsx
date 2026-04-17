@@ -340,26 +340,22 @@ export default function CheckSymptomPage() {
   return (
     <main className="nurture-page mx-auto max-w-xl pb-20">
       <div className="mb-8">
-        <p className="mb-2 text-xs font-medium uppercase tracking-wide text-gray-500">
-          Symptom check
-        </p>
-        <h1 className="text-2xl font-semibold tracking-tight text-gray-900 sm:text-3xl">
+        <p className="nurture-kicker mb-2">Symptom check</p>
+        <h1 className="text-2xl font-semibold tracking-tight text-slate-900 sm:text-3xl">
           Describe what you are seeing
         </h1>
-        <p className="mt-3 text-base leading-relaxed text-gray-600">
+        <p className="mt-3 text-base leading-relaxed text-slate-600">
           This is general guidance, not a diagnosis. If you believe it is an emergency, call
           emergency services now.
         </p>
       </div>
 
       {!childrenLoaded ? (
-        <div className="rounded-2xl border border-gray-200 bg-white p-8 text-center text-gray-600">
-          Loading…
-        </div>
+        <div className="nurture-card p-8 text-center text-slate-600">Loading…</div>
       ) : children.length === 0 ? (
-        <section className="rounded-2xl border border-amber-200 bg-amber-50/50 p-8 text-center">
-          <h2 className="text-lg font-semibold text-gray-900">Add a child to continue</h2>
-          <p className="mt-2 text-sm leading-relaxed text-gray-700">
+        <section className="nurture-empty-dashed">
+          <h2 className="text-lg font-semibold text-slate-900">Add a child to continue</h2>
+          <p className="mt-2 text-sm leading-relaxed text-slate-700">
             We use your child&apos;s age to tailor safety checks and guidance.
           </p>
           <Link
@@ -369,7 +365,7 @@ export default function CheckSymptomPage() {
             👶 Add a child
           </Link>
           <p className="mt-6">
-            <Link href="/dashboard" className="text-sm font-medium text-gray-600 underline">
+            <Link href="/dashboard" className="nurture-text-link text-sm font-medium">
               ⬅️ Back to dashboard
             </Link>
           </p>
@@ -385,13 +381,13 @@ export default function CheckSymptomPage() {
               <div>
                 <label
                   htmlFor="symptom-child"
-                  className="mb-2 block text-sm font-medium text-gray-900"
+                  className="mb-2 block text-sm font-medium text-slate-900"
                 >
                   Which child is this about?
                 </label>
                 <select
                   id="symptom-child"
-                  className="min-h-12 w-full rounded-xl border border-gray-300 bg-white px-4 py-3 text-base text-gray-900 focus:border-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-900/10"
+                  className="min-h-12 w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-base text-slate-900 focus:border-violet-500 focus:outline-none focus:ring-2 focus:ring-violet-500/20"
                   value={selectedChildId}
                   onChange={(e) => setSelectedChildId(e.target.value)}
                   required
@@ -408,34 +404,34 @@ export default function CheckSymptomPage() {
               <div>
                 <label
                   htmlFor="symptom-detail"
-                  className="mb-2 block text-sm font-medium text-gray-900"
+                  className="mb-2 block text-sm font-medium text-slate-900"
                 >
                   What is going on?
                 </label>
                 <textarea
                   id="symptom-detail"
-                  className="min-h-[11rem] w-full resize-y rounded-xl border-2 border-gray-200 bg-white px-4 py-3 text-base leading-relaxed text-gray-900 placeholder:text-gray-400 focus:border-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-900/10"
+                  className="min-h-[11rem] w-full resize-y rounded-xl border-2 border-slate-200 bg-white px-4 py-3 text-base leading-relaxed text-slate-900 placeholder:text-slate-400 focus:border-violet-500 focus:outline-none focus:ring-2 focus:ring-violet-500/20"
                   placeholder="Example: 6-month-old, fever 38.7°C since this evening, mild cough. Drinking OK."
                   value={symptomText}
                   onChange={(e) => setSymptomText(e.target.value)}
                   required
                   autoComplete="off"
                 />
-                <p className="mt-2 text-xs text-gray-500">
+                <p className="mt-2 text-xs text-slate-500">
                   A few sentences help. You can edit before you continue.
                 </p>
               </div>
 
-              <div className="rounded-xl border border-gray-200 bg-gray-50 p-4">
+              <div className="rounded-xl border border-slate-200 bg-slate-50 p-4">
                 <label className="flex cursor-pointer items-start gap-3">
                   <input
                     type="checkbox"
                     checked={disclaimerAccepted}
                     onChange={(e) => setDisclaimerAccepted(e.target.checked)}
-                    className="mt-1 size-4 shrink-0 rounded border-gray-300 text-gray-900 focus:ring-gray-900"
+                    className="mt-1 size-4 shrink-0 rounded border-slate-200 text-slate-900 focus:ring-violet-500"
                     required
                   />
-                  <span className="text-sm leading-relaxed text-gray-800">
+                  <span className="text-sm leading-relaxed text-slate-800">
                     I understand this tool gives general guidance only. It does not replace a
                     doctor, emergency services, or in-person care.
                   </span>
@@ -461,17 +457,17 @@ export default function CheckSymptomPage() {
               className="nurture-card space-y-6"
             >
               <div>
-                <h2 className="text-xl font-semibold text-gray-900">A few quick questions</h2>
-                <p className="mt-2 text-sm leading-relaxed text-gray-600">
+                <h2 className="text-xl font-semibold text-slate-900">A few quick questions</h2>
+                <p className="mt-2 text-sm leading-relaxed text-slate-600">
                   Short answers help us suggest safer next steps. This is still not a diagnosis.
                 </p>
               </div>
 
               {followupQuestions.map((question) => (
                 <div key={question}>
-                  <label className="mb-2 block text-sm font-medium text-gray-900">{question}</label>
+                  <label className="mb-2 block text-sm font-medium text-slate-900">{question}</label>
                   <input
-                    className="min-h-12 w-full rounded-xl border border-gray-300 px-4 py-3 text-base text-gray-900 focus:border-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-900/10"
+                    className="min-h-12 w-full rounded-xl border border-slate-200 px-4 py-3 text-base text-slate-900 focus:border-violet-500 focus:outline-none focus:ring-2 focus:ring-violet-500/20"
                     value={followupAnswers[question] || ""}
                     onChange={(e) =>
                       setFollowupAnswers((prev) => ({
@@ -490,7 +486,7 @@ export default function CheckSymptomPage() {
                   onClick={() => {
                     setStage("initial");
                   }}
-                  className="flex min-h-12 w-full items-center justify-center rounded-xl border border-gray-300 bg-white px-4 text-base font-medium text-gray-900 hover:bg-gray-50 sm:w-1/3"
+                  className="flex min-h-12 w-full items-center justify-center rounded-xl border border-slate-200 bg-white px-4 text-base font-medium text-slate-900 hover:bg-slate-50 sm:w-1/3"
                 >
                   ⬅️ Back
                 </button>
@@ -511,10 +507,10 @@ export default function CheckSymptomPage() {
             <section className="space-y-6">
               <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
                 <div>
-                  <h2 className="text-xl font-semibold text-gray-900 sm:text-2xl">
+                  <h2 className="text-xl font-semibold text-slate-900 sm:text-2xl">
                     Your guidance summary
                   </h2>
-                  <p className="mt-1 text-sm text-gray-600">
+                  <p className="mt-1 text-sm text-slate-600">
                     For {selectedChild?.name ?? "your child"}. Not a medical diagnosis.
                   </p>
                 </div>
@@ -551,11 +547,11 @@ export default function CheckSymptomPage() {
                 </div>
               )}
 
-              <div className="rounded-2xl border-2 border-gray-900 bg-gray-50 p-5">
-                <p className="text-xs font-semibold uppercase tracking-wide text-gray-600">
+              <div className="rounded-2xl border-2 border-violet-700/90 bg-slate-50 p-5">
+                <p className="text-xs font-semibold uppercase tracking-wide text-slate-600">
                   Recommended next step
                 </p>
-                <p className="mt-2 text-base font-medium leading-relaxed text-gray-900">
+                <p className="mt-2 text-base font-medium leading-relaxed text-slate-900">
                   {result.recommended_action}
                 </p>
               </div>
@@ -564,20 +560,20 @@ export default function CheckSymptomPage() {
                 <CareActions urgency={result.urgency} />
               )}
 
-              <div className="rounded-xl border border-gray-200 bg-white p-5">
-                <p className="text-xs font-semibold uppercase tracking-wide text-gray-500">
+              <div className="rounded-xl border border-slate-200 bg-white p-5">
+                <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">
                   Summary
                 </p>
-                <p className="mt-2 text-sm leading-relaxed text-gray-800">{result.summary}</p>
+                <p className="mt-2 text-sm leading-relaxed text-slate-800">{result.summary}</p>
               </div>
 
               <ModelAssistNote confidence={result.confidence} reasoning={result.reasoning} />
 
-              <div className="rounded-xl border border-gray-200 bg-white p-5">
-                <p className="text-xs font-semibold uppercase tracking-wide text-gray-500">
+              <div className="rounded-xl border border-slate-200 bg-white p-5">
+                <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">
                   Watch for
                 </p>
-                <ul className="mt-3 list-disc space-y-2 pl-5 text-sm leading-relaxed text-gray-800">
+                <ul className="mt-3 list-disc space-y-2 pl-5 text-sm leading-relaxed text-slate-800">
                   {result.red_flags.map((flag, index) => (
                     <li key={index}>{flag}</li>
                   ))}
@@ -595,14 +591,14 @@ export default function CheckSymptomPage() {
               </div>
 
               {savedCheckId ? (
-                <div className="rounded-xl border border-gray-200 bg-gray-50 p-4">
+                <div className="rounded-xl border border-slate-200 bg-slate-50 p-4">
                   <ResultHelpfulFeedback checkId={savedCheckId} />
                 </div>
               ) : null}
 
               {message ? <AlertError>{message}</AlertError> : null}
 
-              <div className="flex flex-col gap-3 border-t border-gray-100 pt-6 sm:flex-row sm:flex-wrap">
+              <div className="flex flex-col gap-3 border-t border-slate-100 pt-6 sm:flex-row sm:flex-wrap">
                 <button
                   type="button"
                   onClick={() => {
@@ -615,19 +611,19 @@ export default function CheckSymptomPage() {
                     setMessage("");
                     setSavedCheckId(null);
                   }}
-                  className="inline-flex min-h-12 flex-1 items-center justify-center rounded-xl border border-gray-300 bg-white px-4 text-base font-medium text-gray-900 hover:bg-gray-50"
+                  className="inline-flex min-h-12 flex-1 items-center justify-center rounded-xl border border-slate-200 bg-white px-4 text-base font-medium text-slate-900 hover:bg-slate-50"
                 >
                   🔄 Start another check
                 </button>
                 <Link
                   href="/history"
-                  className="inline-flex min-h-12 flex-1 items-center justify-center rounded-xl border border-gray-300 bg-white px-4 text-base font-medium text-gray-900 hover:bg-gray-50"
+                  className="inline-flex min-h-12 flex-1 items-center justify-center rounded-xl border border-slate-200 bg-white px-4 text-base font-medium text-slate-900 hover:bg-slate-50"
                 >
                   📈 View history
                 </Link>
                 <Link
                   href="/dashboard"
-                  className="inline-flex min-h-12 flex-1 items-center justify-center rounded-xl px-4 text-base font-medium text-gray-600 underline underline-offset-2 hover:text-gray-900"
+                  className="inline-flex min-h-12 flex-1 items-center justify-center rounded-xl px-4 text-base font-medium text-slate-600 underline underline-offset-2 hover:text-slate-900"
                 >
                   🏠 Dashboard
                 </Link>

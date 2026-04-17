@@ -457,7 +457,7 @@ export default function FeedingPage() {
 
   if (!childId) {
     return (
-      <div className="min-h-screen bg-[#f8fafc] p-6 text-slate-800">
+      <div className="min-h-screen bg-[#f9fafb] p-6 text-slate-800">
         <p>Missing child id.</p>
       </div>
     );
@@ -465,7 +465,7 @@ export default function FeedingPage() {
 
   if (loading && !guidance) {
     return (
-      <div className="flex min-h-screen flex-col items-center justify-center bg-[#f8fafc] text-violet-900">
+      <div className="flex min-h-screen flex-col items-center justify-center bg-[#f9fafb] text-violet-900">
         <Spinner className="h-8 w-8 animate-spin text-violet-700" />
         <p className="mt-4 text-sm text-slate-600">Loading feeding guidance…</p>
       </div>
@@ -474,7 +474,7 @@ export default function FeedingPage() {
 
   if (error || !guidance) {
     return (
-      <div className="min-h-screen bg-[#f8fafc] p-6 text-slate-800">
+      <div className="min-h-screen bg-[#f9fafb] p-6 text-slate-800">
         <p className="text-red-700">{error ?? "Something went wrong."}</p>
         <Link href="/dashboard" className="mt-4 inline-block text-violet-800 underline">
           Back to dashboard
@@ -491,8 +491,8 @@ export default function FeedingPage() {
   const reactionsNoted = allergenRows.filter((r) => r.reaction_noted);
 
   return (
-    <div className="min-h-screen bg-[#f8fafc] pb-24 text-slate-900">
-      <header className="sticky top-0 z-20 border-b border-slate-200/80 bg-[#f8fafc]/95 backdrop-blur">
+    <div className="min-h-screen bg-[#f9fafb] pb-24 text-slate-900">
+      <header className="sticky top-0 z-20 border-b border-slate-200/80 bg-[#f9fafb]/95 backdrop-blur">
         <div className="mx-auto flex max-w-lg items-center justify-between gap-2 px-4 py-3">
           <Link
             href="/dashboard"
@@ -1026,7 +1026,7 @@ export default function FeedingPage() {
           role="dialog"
           aria-modal
         >
-          <div className="w-full max-w-sm rounded-2xl bg-[#f8fafc] p-5 shadow-xl">
+          <div className="w-full max-w-sm rounded-2xl bg-[#f9fafb] p-5 shadow-xl">
             <h3 className="text-lg font-semibold text-violet-950">
               Details — {detailModal.label}
             </h3>

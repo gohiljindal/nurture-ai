@@ -4,10 +4,8 @@ export default function Home() {
   return (
     <main className="nurture-page flex min-h-screen flex-col items-center justify-center px-4 pb-16 pt-8 sm:px-6">
       <div className="w-full max-w-lg sm:max-w-2xl">
-        <div className="nurture-hero text-center">
-          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-violet-700/90">
-            NurtureAI
-          </p>
+        <div className="nurture-hero-solid text-center">
+          <p className="nurture-kicker tracking-[0.2em]">NurtureAI</p>
           <h1 className="mt-3 text-3xl leading-tight text-slate-900 sm:text-4xl">
             Calmer decisions when your child seems unwell
           </h1>

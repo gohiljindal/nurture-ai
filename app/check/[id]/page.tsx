@@ -50,25 +50,22 @@ export default async function CheckDetailPage({ params }: PageProps) {
   return (
     <main className="nurture-page mx-auto max-w-3xl">
       <div className="flex flex-col gap-4 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between">
-        <h1 className="text-2xl font-bold">Check details</h1>
+        <div>
+          <p className="nurture-kicker">Saved check</p>
+          <h1 className="mt-2 text-2xl font-bold text-slate-900">Check details</h1>
+        </div>
         <div className="flex flex-wrap gap-2">
           <StartSymptomCheckLink />
-          <Link
-            href="/history"
-            className="inline-flex items-center justify-center rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium hover:bg-gray-50"
-          >
-            History
+          <Link href="/history" className="btn-nurture-secondary">
+            📈 History
           </Link>
-          <Link
-            href="/dashboard"
-            className="inline-flex items-center justify-center rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium hover:bg-gray-50"
-          >
-            Dashboard
+          <Link href="/dashboard" className="btn-nurture-secondary">
+            🏠 Dashboard
           </Link>
         </div>
       </div>
 
-      <p className="mt-4 text-sm text-gray-600">
+      <p className="mt-4 text-sm text-slate-600">
         {new Date(row.created_at).toLocaleString()}
       </p>
 
@@ -98,8 +95,8 @@ export default async function CheckDetailPage({ params }: PageProps) {
         </div>
       )}
 
-      <div className="mt-6 rounded-xl border border-gray-200 bg-gray-50 p-4">
-        <p className="text-sm font-semibold text-gray-900">Decision source</p>
+      <div className="mt-6 rounded-xl border border-slate-200 bg-slate-50 p-4">
+        <p className="text-sm font-semibold text-slate-900">Decision source</p>
         <div className="mt-2 flex flex-wrap items-center gap-2">
           {decisionSource === "safety_rule" ? (
             <span className="rounded-full border border-blue-200 bg-blue-50 px-3 py-1 text-xs font-medium text-blue-900">
@@ -110,32 +107,32 @@ export default async function CheckDetailPage({ params }: PageProps) {
               AI-assisted
             </span>
           ) : (
-            <span className="text-sm text-gray-600">—</span>
+            <span className="text-sm text-slate-600">—</span>
           )}
         </div>
         {decisionSource === "safety_rule" && ruleReason ? (
-          <p className="mt-3 text-sm text-gray-700">
+          <p className="mt-3 text-sm text-slate-700">
             <span className="font-medium">Safety check:</span>{" "}
             {safetyRuleReasonLabel(ruleReason)}
           </p>
         ) : null}
       </div>
 
-      <div className="mt-6 rounded-xl border border-gray-200 p-4">
+      <div className="mt-6 rounded-xl border border-slate-200 p-4">
         <p className="font-semibold">Your input</p>
-        <p className="mt-2 whitespace-pre-wrap text-sm text-gray-800">
+        <p className="mt-2 whitespace-pre-wrap text-sm text-slate-800">
           {row.input_text}
         </p>
       </div>
 
-      <div className="mt-6 space-y-4 rounded-xl border border-gray-200 p-4">
+      <div className="mt-6 space-y-4 rounded-xl border border-slate-200 p-4">
         <p className="font-semibold">Guidance</p>
 
         <div>
           <p className="text-xs font-medium uppercase tracking-wide text-gray-500">
             Recommended action
           </p>
-          <p className="mt-1 text-sm text-gray-800">
+          <p className="mt-1 text-sm text-slate-800">
             {triage.recommended_action || "—"}
           </p>
         </div>
@@ -144,7 +141,7 @@ export default async function CheckDetailPage({ params }: PageProps) {
           <p className="text-xs font-medium uppercase tracking-wide text-gray-500">
             Summary
           </p>
-          <p className="mt-1 text-sm text-gray-800">{triage.summary || "—"}</p>
+          <p className="mt-1 text-sm text-slate-800">{triage.summary || "—"}</p>
         </div>
 
         <ModelAssistNote confidence={confidence} reasoning={reasoning} />
@@ -154,7 +151,7 @@ export default async function CheckDetailPage({ params }: PageProps) {
             Red flags to watch for
           </p>
           {redFlags.length > 0 ? (
-            <ul className="mt-2 list-disc space-y-1 pl-5 text-sm text-gray-800">
+            <ul className="mt-2 list-disc space-y-1 pl-5 text-sm text-slate-800">
               {redFlags.map((f, i) => (
                 <li key={i}>{f}</li>
               ))}
@@ -187,19 +184,13 @@ export default async function CheckDetailPage({ params }: PageProps) {
         />
       </div>
 
-      <div className="mt-10 flex flex-col gap-3 border-t border-gray-200 pt-8 sm:flex-row sm:flex-wrap sm:justify-center">
+      <div className="mt-10 flex flex-col gap-3 border-t border-slate-200 pt-8 sm:flex-row sm:flex-wrap sm:justify-center">
         <StartSymptomCheckLink />
-        <Link
-          href="/history"
-          className="inline-flex items-center justify-center rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-900 hover:bg-gray-50"
-        >
-          History
+        <Link href="/history" className="btn-nurture-secondary">
+          📈 History
         </Link>
-        <Link
-          href="/dashboard"
-          className="inline-flex items-center justify-center rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-900 hover:bg-gray-50"
-        >
-          Dashboard
+        <Link href="/dashboard" className="btn-nurture-secondary">
+          🏠 Dashboard
         </Link>
       </div>
     </main>

@@ -31,7 +31,7 @@ export function CoreFeatureNav() {
 
   return (
     <nav
-      className="border-b border-slate-200/80 bg-gradient-to-r from-violet-50/50 via-[#f8fafc] to-sky-50/50 backdrop-blur-sm"
+      className="border-b border-slate-200/80 bg-gradient-to-r from-violet-50/50 via-[#f9fafb] to-sky-50/50 backdrop-blur-sm"
       aria-label="Child tracking"
     >
       <div className="mx-auto flex max-w-5xl flex-nowrap items-center justify-start gap-1.5 overflow-x-auto overscroll-x-contain px-4 py-2.5 [-ms-overflow-style:none] [scrollbar-width:none] sm:flex-wrap sm:justify-start sm:gap-2 [&::-webkit-scrollbar]:hidden">

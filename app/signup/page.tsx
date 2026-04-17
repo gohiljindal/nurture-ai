@@ -44,7 +44,8 @@ export default function SignupPage() {
         onSubmit={handleSignup}
         className="nurture-card w-full max-w-md space-y-4"
       >
-        <h1 className="text-2xl text-slate-900">Create account</h1>
+        <p className="nurture-kicker">Account</p>
+        <h1 className="mt-2 text-2xl font-bold text-slate-900">Create account</h1>
         <p className="text-sm text-slate-600">
           Already have one?{" "}
           <Link href="/login" className="nurture-text-link">
@@ -86,7 +87,7 @@ export default function SignupPage() {
             onChange={(e) => setPassword(e.target.value)}
             required
           />
-          <p className="mt-1 text-xs text-stone-500">At least 6 characters.</p>
+          <p className="mt-1 text-xs text-slate-500">At least 6 characters.</p>
         </div>
 
         <button

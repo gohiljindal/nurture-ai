@@ -15,9 +15,12 @@ export default async function HistoryPage() {
 
   return (
     <main className="nurture-page mx-auto max-w-4xl">
-      <div className="flex flex-wrap items-end justify-between gap-4">
-        <h1 className="text-3xl text-slate-900">History</h1>
-        <StartSymptomCheckLink />
+      <div className="mb-2">
+        <p className="nurture-kicker">Past checks</p>
+        <div className="mt-3 flex flex-wrap items-end justify-between gap-4">
+          <h1 className="text-3xl font-bold text-slate-900">History</h1>
+          <StartSymptomCheckLink />
+        </div>
       </div>
 
       {historyError ? (
@@ -25,26 +28,23 @@ export default async function HistoryPage() {
       ) : null}
 
       {rows.length > 0 ? (
-        <p className="mt-2 text-sm text-gray-600">
+        <p className="mt-2 text-sm text-slate-600">
           Your latest {rows.length} saved check{rows.length === 1 ? "" : "es"} (up to 50).
         </p>
       ) : null}
 
       {!rows.length ? (
-        <div className="mt-8 rounded-2xl border border-gray-200 bg-gray-50/80 p-8 text-center">
-          <p className="text-base font-medium text-gray-900">
+        <div className="nurture-panel-muted mt-8">
+          <p className="text-base font-medium text-slate-900">
             Start your first symptom check to get guidance for your child
           </p>
-          <p className="mt-2 text-sm text-gray-600">
+          <p className="mt-2 text-sm text-slate-600">
             Nothing saved yet—your past checks will appear here.
           </p>
           <div className="mt-6 flex flex-wrap justify-center gap-3">
             <StartSymptomCheckLink />
-            <Link
-              href="/dashboard"
-              className="inline-flex items-center justify-center rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-900 hover:bg-gray-50"
-            >
-              Dashboard
+            <Link href="/dashboard" className="btn-nurture-secondary">
+              🏠 Dashboard
             </Link>
           </div>
         </div>
@@ -61,8 +61,8 @@ export default async function HistoryPage() {
                   >
                     <div className="flex flex-wrap items-start justify-between gap-3">
                       <div>
-                        <p className="text-sm font-medium text-gray-900">{childName}</p>
-                        <p className="mt-0.5 text-xs text-gray-500">
+                        <p className="text-sm font-medium text-slate-900">{childName}</p>
+                        <p className="mt-0.5 text-xs text-slate-500">
                           {new Date(check.created_at).toLocaleString()}
                         </p>
                       </div>
@@ -72,22 +72,19 @@ export default async function HistoryPage() {
                         {urgencyDisplayLabel(check.urgency)}
                       </span>
                     </div>
-                    <p className="mt-3 line-clamp-2 text-sm text-gray-700">
+                    <p className="mt-3 line-clamp-2 text-sm text-slate-700">
                       {previewInput(check.input_text)}
                     </p>
-                    <p className="mt-3 text-xs font-medium text-gray-500">View details →</p>
+                    <p className="mt-3 text-xs font-medium text-slate-500">View details →</p>
                   </Link>
                 </li>
               );
             })}
           </ul>
-          <div className="mt-8 flex flex-wrap justify-center gap-3 border-t border-gray-100 pt-8">
+          <div className="mt-8 flex flex-wrap justify-center gap-3 border-t border-slate-100 pt-8">
             <StartSymptomCheckLink />
-            <Link
-              href="/dashboard"
-              className="inline-flex items-center justify-center rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-900 hover:bg-gray-50"
-            >
-              Dashboard
+            <Link href="/dashboard" className="btn-nurture-secondary">
+              🏠 Dashboard
             </Link>
           </div>
         </>

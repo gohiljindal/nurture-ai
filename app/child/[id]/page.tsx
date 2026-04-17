@@ -51,15 +51,15 @@ export default async function ChildDetailPage({ params }: PageProps) {
     <main className="nurture-page mx-auto max-w-4xl">
       <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <div>
-          <Link href="/dashboard" className="text-sm text-gray-500 hover:underline">
+          <Link href="/dashboard" className="text-sm text-slate-500 hover:underline">
             ⬅️ Back to dashboard
           </Link>
           <h1 className="mt-2 text-3xl font-bold">{child.name}</h1>
-          <p className="mt-2 text-sm text-gray-600">
+          <p className="mt-2 text-sm text-slate-600">
             Child profile, what to expect at this age, vaccine preview, and recent checks
           </p>
           <p className="mt-2 text-sm">
-            <Link href="/history" className="font-medium text-emerald-800 underline-offset-2 hover:underline">
+            <Link href="/history" className="nurture-text-link font-medium">
               📈 View all symptom checks
             </Link>
           </p>
@@ -68,15 +68,15 @@ export default async function ChildDetailPage({ params }: PageProps) {
         <StartSymptomCheckLink />
       </div>
 
-      <section className="mb-8 rounded-2xl border p-6 shadow-sm">
-        <h2 className="text-xl font-semibold">Profile</h2>
+      <section className="nurture-card mb-8">
+        <h2 className="text-xl font-semibold text-slate-900">Profile</h2>
 
         {!province && (
           <p className="mt-4 rounded-xl border border-slate-200 bg-slate-50/80 px-4 py-3 text-sm text-slate-700">
             Add your province to unlock the personalised vaccine schedule.{" "}
             <Link
               href="#child-province"
-              className="font-medium text-emerald-800 underline-offset-2 hover:underline"
+              className="font-medium text-violet-800 underline-offset-2 hover:underline"
             >
               Set province →
             </Link>
@@ -85,30 +85,30 @@ export default async function ChildDetailPage({ params }: PageProps) {
 
         <div className="mt-4 grid gap-3 sm:grid-cols-2">
           <div>
-            <p className="text-sm text-gray-500">Date of birth</p>
+            <p className="text-sm text-slate-500">Date of birth</p>
             <p className="font-medium">{child.date_of_birth}</p>
           </div>
 
           <div>
-            <p className="text-sm text-gray-500">Age</p>
+            <p className="text-sm text-slate-500">Age</p>
             <p className="font-medium">
               {ageInMonths} month{ageInMonths === 1 ? "" : "s"}
             </p>
           </div>
 
           <div>
-            <p className="text-sm text-gray-500">Sex</p>
+            <p className="text-sm text-slate-500">Sex</p>
             <p className="font-medium">{child.sex_at_birth || "Prefer not to say"}</p>
           </div>
 
           <div>
-            <p className="text-sm text-gray-500">Premature</p>
+            <p className="text-sm text-slate-500">Premature</p>
             <p className="font-medium">{child.is_premature ? "Yes" : "No"}</p>
           </div>
 
           {child.is_premature && (
             <div>
-              <p className="text-sm text-gray-500">Gestational age at birth</p>
+              <p className="text-sm text-slate-500">Gestational age at birth</p>
               <p className="font-medium">
                 {child.gestational_age_weeks
                   ? `${child.gestational_age_weeks} weeks`
@@ -123,71 +123,71 @@ export default async function ChildDetailPage({ params }: PageProps) {
         <div className="mt-6 grid gap-3 sm:grid-cols-2">
           <Link
             href={`/milestones/${id}`}
-            className="flex items-center justify-between rounded-xl border border-emerald-200 bg-emerald-50/60 px-4 py-3 text-emerald-950 transition hover:bg-emerald-50"
+            className="flex items-center justify-between rounded-xl border border-violet-200 bg-violet-50/60 px-4 py-3 text-violet-950 transition hover:bg-violet-50/80"
           >
             <span>
               <span className="font-semibold">Development milestones</span>
-              <span className="mt-0.5 block text-sm text-emerald-900/80">
+              <span className="mt-0.5 block text-sm text-violet-900/80">
                 Track skills by age and note what you observe at home
               </span>
             </span>
-            <span className="text-emerald-700" aria-hidden>
+            <span className="text-violet-600" aria-hidden>
               🧠
             </span>
           </Link>
           <Link
             href={`/growth/${id}`}
-            className="flex items-center justify-between rounded-xl border border-emerald-200 bg-emerald-50/60 px-4 py-3 text-emerald-950 transition hover:bg-emerald-50"
+            className="flex items-center justify-between rounded-xl border border-violet-200 bg-violet-50/60 px-4 py-3 text-violet-950 transition hover:bg-violet-50/80"
           >
             <span>
               <span className="font-semibold">Growth</span>
-              <span className="mt-0.5 block text-sm text-emerald-900/80">
+              <span className="mt-0.5 block text-sm text-violet-900/80">
                 Measurements, percentiles, and trends
               </span>
             </span>
-            <span className="text-emerald-700" aria-hidden>
+            <span className="text-violet-600" aria-hidden>
               📏
             </span>
           </Link>
           <Link
             href={`/vaccines/${id}`}
-            className="flex items-center justify-between rounded-xl border border-emerald-200 bg-emerald-50/60 px-4 py-3 text-emerald-950 transition hover:bg-emerald-50"
+            className="flex items-center justify-between rounded-xl border border-violet-200 bg-violet-50/60 px-4 py-3 text-violet-950 transition hover:bg-violet-50/80"
           >
             <span>
               <span className="font-semibold">Vaccines</span>
-              <span className="mt-0.5 block text-sm text-emerald-900/80">
+              <span className="mt-0.5 block text-sm text-violet-900/80">
                 Schedule and province-based reminders
               </span>
             </span>
-            <span className="text-emerald-700" aria-hidden>
+            <span className="text-violet-600" aria-hidden>
               💉
             </span>
           </Link>
           <Link
             href={`/feeding/${id}`}
-            className="flex items-center justify-between rounded-xl border border-emerald-200 bg-emerald-50/60 px-4 py-3 text-emerald-950 transition hover:bg-emerald-50"
+            className="flex items-center justify-between rounded-xl border border-violet-200 bg-violet-50/60 px-4 py-3 text-violet-950 transition hover:bg-violet-50/80"
           >
             <span>
               <span className="font-semibold">Feeding</span>
-              <span className="mt-0.5 block text-sm text-emerald-900/80">
+              <span className="mt-0.5 block text-sm text-violet-900/80">
                 Guidance, solids, allergens, and optional food log
               </span>
             </span>
-            <span className="text-emerald-700" aria-hidden>
+            <span className="text-violet-600" aria-hidden>
               🥣
             </span>
           </Link>
           <Link
             href={`/sleep/${id}`}
-            className="flex items-center justify-between rounded-xl border border-emerald-200 bg-emerald-50/60 px-4 py-3 text-emerald-950 transition hover:bg-emerald-50"
+            className="flex items-center justify-between rounded-xl border border-violet-200 bg-violet-50/60 px-4 py-3 text-violet-950 transition hover:bg-violet-50/80"
           >
             <span>
               <span className="font-semibold">Sleep Guide</span>
-              <span className="mt-0.5 block text-sm text-emerald-900/80">
+              <span className="mt-0.5 block text-sm text-violet-900/80">
                 Age-based guidance, safe sleep checklist, optional log
               </span>
             </span>
-            <span className="text-emerald-700" aria-hidden>
+            <span className="text-violet-600" aria-hidden>
               😴
             </span>
           </Link>
@@ -202,7 +202,7 @@ export default async function ChildDetailPage({ params }: PageProps) {
         <h2 className="text-xl font-semibold">What to Expect Now</h2>
 
         {!expectation ? (
-          <p className="mt-4 text-sm text-gray-600">
+          <p className="mt-4 text-sm text-slate-600">
             No guidance available for this age yet.
           </p>
         ) : (
@@ -261,27 +261,27 @@ export default async function ChildDetailPage({ params }: PageProps) {
         <h2 className="text-xl font-semibold">Next Vaccine Milestone</h2>
 
         {vaccine_records_count > 0 ? (
-          <p className="mt-3 text-sm text-gray-600">
+          <p className="mt-3 text-sm text-slate-600">
             {vaccine_records_count} dose{vaccine_records_count === 1 ? "" : "s"} recorded in your
             tracker. Open the vaccine planner for the full province schedule.
           </p>
         ) : null}
 
         {nextVaccine ? (
-          <div className="mt-4 rounded-xl bg-gray-50 p-4">
+          <div className="mt-4 rounded-xl bg-slate-50 p-4">
             <p className="font-medium">{nextVaccine.label}</p>
-            <p className="mt-2 text-sm text-gray-600">
+            <p className="mt-2 text-sm text-slate-600">
               {nextVaccine.description}
             </p>
             <p className="mt-3 text-sm">
               <Link
                 href={`/vaccines/${id}`}
-                className="font-medium text-emerald-800 underline-offset-2 hover:underline"
+                className="font-medium text-violet-800 underline-offset-2 hover:underline"
               >
                 💉 Open vaccine schedule preview
               </Link>
               {province ? null : (
-                <span className="text-gray-600">
+                <span className="text-slate-600">
                   {" "}
                   — set province on this profile for province-specific timing.
                 </span>
@@ -289,7 +289,7 @@ export default async function ChildDetailPage({ params }: PageProps) {
             </p>
           </div>
         ) : (
-          <p className="mt-4 text-sm text-gray-600">
+          <p className="mt-4 text-sm text-slate-600">
             No upcoming vaccine milestone found in the current MVP schedule.
           </p>
         )}
@@ -299,8 +299,8 @@ export default async function ChildDetailPage({ params }: PageProps) {
         <h2 className="text-xl font-semibold">Recent Symptom Checks</h2>
 
         {!symptomChecks || symptomChecks.length === 0 ? (
-          <div className="mt-4 rounded-xl border border-dashed border-gray-200 bg-gray-50 p-6 text-center">
-            <p className="text-sm font-medium text-gray-900">
+          <div className="mt-4 rounded-xl border border-dashed border-slate-200 bg-slate-50 p-6 text-center">
+            <p className="text-sm font-medium text-slate-900">
               Start your first symptom check to get guidance for your child
             </p>
             <div className="mt-4 flex justify-center">
@@ -313,7 +313,7 @@ export default async function ChildDetailPage({ params }: PageProps) {
               <Link
                 key={check.id}
                 href={`/check/${check.id}`}
-                className="block rounded-xl border p-4 transition hover:bg-gray-50"
+                className="block rounded-xl border p-4 transition hover:bg-slate-50"
               >
                 <div className="flex items-center justify-between">
                   <span
@@ -322,12 +322,12 @@ export default async function ChildDetailPage({ params }: PageProps) {
                     {urgencyDisplayLabel(check.urgency)}
                   </span>
 
-                  <p className="text-xs text-gray-500">
+                  <p className="text-xs text-slate-500">
                     {new Date(check.created_at).toLocaleString()}
                   </p>
                 </div>
 
-                <p className="mt-3 text-sm text-gray-700">{check.input_text}</p>
+                <p className="mt-3 text-sm text-slate-700">{check.input_text}</p>
 
                 {check.triage.decision_source === "safety_rule" && (
                   <p className="mt-2 text-xs text-blue-700">
