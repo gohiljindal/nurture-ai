@@ -4,4 +4,5 @@
  */
 export * from "./child-service";
 export * from "./child-summary-service";
+export * from "./reminder-service";
 export * from "./symptom-check-service";

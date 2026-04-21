@@ -5,6 +5,7 @@
  */
 import { Prisma } from "@prisma/client";
 
+import { calculateAgeInMonths } from "@/lib/child-age";
 import { prisma } from "@/lib/prisma";
 import {
   parseSymptomTriageResult,
@@ -12,6 +13,7 @@ import {
   type SymptomTriageResult,
 } from "@/lib/symptom-triage-result";
 import { isChildOwnedByUser } from "@/lib/services/child-service";
+import { enrichSymptomTriageResult } from "@/lib/triage-enrichment";
 
 export type { SymptomTriageResult } from "@/lib/symptom-triage-result";
 
@@ -42,12 +44,40 @@ export type SymptomCheckDetailRow = {
   input_text: string;
   urgency: string;
   triage: SymptomTriageResult;
+  /** Child province code — regional health line (811 etc.) in UI. */
+  province: string | null;
   /** Prior helpful / not helpful for this user on this check, if any. */
   feedback: { helpful: boolean } | null;
 };
 
 function iso(d: Date): string {
   return d.toISOString();
+}
+
+function dateOfBirthString(d: Date): string {
+  return d.toISOString().slice(0, 10);
+}
+
+/**
+ * Parse stored JSON + columns, then hydrate optional fields (urgency_score, lists) so
+ * API consumers always see a consistent shape (matches live symptom-final output).
+ */
+/** Exported for dashboard child-summary mapper (same hydration as list/detail APIs). */
+export function triageFromStoredRow(
+  aiResponse: unknown,
+  columns: {
+    urgency: string;
+    decisionSource: string | null;
+    ruleReason: string | null;
+  },
+  inputText: string,
+  childDateOfBirth: string
+): SymptomTriageResult {
+  const parsed = parseSymptomTriageResult(aiResponse, columns);
+  return enrichSymptomTriageResult(parsed, {
+    ageMonths: calculateAgeInMonths(childDateOfBirth),
+    concernSnippet: inputText,
+  });
 }
 
 /**
@@ -67,7 +97,7 @@ export async function listRecentSymptomChecksForDashboard(
       orderBy: { createdAt: "desc" },
       take,
       include: {
-        child: { select: { name: true } },
+        child: { select: { name: true, dateOfBirth: true } },
       },
     });
 
@@ -78,11 +108,16 @@ export async function listRecentSymptomChecksForDashboard(
       created_at: iso(r.createdAt),
       child_id: r.childId,
       children: { name: r.child.name },
-      triage: parseSymptomTriageResult(r.aiResponse, {
-        urgency: r.urgency,
-        decisionSource: r.decisionSource,
-        ruleReason: r.ruleReason,
-      }),
+      triage: triageFromStoredRow(
+        r.aiResponse,
+        {
+          urgency: r.urgency,
+          decisionSource: r.decisionSource,
+          ruleReason: r.ruleReason,
+        },
+        r.inputText,
+        dateOfBirthString(r.child.dateOfBirth)
+      ),
     }));
 
     return { rows: mapped, error: null };
@@ -109,7 +144,7 @@ export async function listSymptomChecksForHistory(
       orderBy: { createdAt: "desc" },
       take: limit,
       include: {
-        child: { select: { name: true } },
+        child: { select: { name: true, dateOfBirth: true } },
       },
     });
 
@@ -120,11 +155,16 @@ export async function listSymptomChecksForHistory(
       input_text: r.inputText,
       child_id: r.childId,
       childName: r.child.name,
-      triage: parseSymptomTriageResult(r.aiResponse, {
-        urgency: r.urgency,
-        decisionSource: r.decisionSource,
-        ruleReason: r.ruleReason,
-      }),
+      triage: triageFromStoredRow(
+        r.aiResponse,
+        {
+          urgency: r.urgency,
+          decisionSource: r.decisionSource,
+          ruleReason: r.ruleReason,
+        },
+        r.inputText,
+        dateOfBirthString(r.child.dateOfBirth)
+      ),
     }));
 
     return { rows: mapped, error: null };
@@ -156,6 +196,7 @@ export async function getSymptomCheckDetailForUser(
         aiResponse: true,
         decisionSource: true,
         ruleReason: true,
+        child: { select: { dateOfBirth: true, province: true } },
         feedbacks: {
           where: { userId },
           select: { helpful: true },
@@ -175,11 +216,17 @@ export async function getSymptomCheckDetailForUser(
       created_at: iso(r.createdAt),
       input_text: r.inputText,
       urgency: r.urgency,
-      triage: parseSymptomTriageResult(r.aiResponse, {
-        urgency: r.urgency,
-        decisionSource: r.decisionSource,
-        ruleReason: r.ruleReason,
-      }),
+      triage: triageFromStoredRow(
+        r.aiResponse,
+        {
+          urgency: r.urgency,
+          decisionSource: r.decisionSource,
+          ruleReason: r.ruleReason,
+        },
+        r.inputText,
+        dateOfBirthString(r.child.dateOfBirth)
+      ),
+      province: r.child.province,
       feedback: prior ? { helpful: prior.helpful } : null,
     };
 
@@ -213,14 +260,8 @@ export async function listSymptomChecksForChild(
       where: { userId, childId },
       orderBy: { createdAt: "desc" },
       take,
-      select: {
-        id: true,
-        urgency: true,
-        createdAt: true,
-        inputText: true,
-        aiResponse: true,
-        decisionSource: true,
-        ruleReason: true,
+      include: {
+        child: { select: { dateOfBirth: true } },
       },
     });
 
@@ -229,11 +270,16 @@ export async function listSymptomChecksForChild(
       urgency: r.urgency,
       created_at: iso(r.createdAt),
       input_text: r.inputText,
-      triage: parseSymptomTriageResult(r.aiResponse, {
-        urgency: r.urgency,
-        decisionSource: r.decisionSource,
-        ruleReason: r.ruleReason,
-      }),
+      triage: triageFromStoredRow(
+        r.aiResponse,
+        {
+          urgency: r.urgency,
+          decisionSource: r.decisionSource,
+          ruleReason: r.ruleReason,
+        },
+        r.inputText,
+        dateOfBirthString(r.child.dateOfBirth)
+      ),
     }));
 
     return { rows: mapped, error: null };

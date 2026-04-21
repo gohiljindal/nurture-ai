@@ -63,6 +63,29 @@ function createUpstashLimiter(): SymptomLimiter {
 
 const useRedis = isUpstashConfigured();
 
+/** POST `/api/symptom-followup` and `/api/symptom-final` — AI-backed symptom flow (10 / 10 min per user+IP). */
 export const symptomRateLimit: SymptomLimiter = useRedis
   ? createUpstashLimiter()
+  : createNoOpLimiter();
+
+/** Alias for documentation / imports (same limiter as `symptomRateLimit`). */
+export const symptomAiRateLimit = symptomRateLimit;
+
+function createHistoryLimiter(): SymptomLimiter {
+  if (!useRedis) return createNoOpLimiter();
+  const redis = new Redis({
+    url: process.env.UPSTASH_REDIS_REST_URL!,
+    token: process.env.UPSTASH_REDIS_REST_TOKEN!,
+  });
+  return new Ratelimit({
+    redis,
+    limiter: Ratelimit.slidingWindow(120, "1 m"),
+    analytics: true,
+    prefix: "nurtureai:symptom_history",
+  });
+}
+
+/** GET `/api/symptom-checks` — list history (abuse protection; separate bucket from AI POSTs). */
+export const symptomHistoryRateLimit: SymptomLimiter = useRedis
+  ? createHistoryLimiter()
   : createNoOpLimiter();

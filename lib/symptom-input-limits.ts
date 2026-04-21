@@ -1,8 +1,10 @@
-/** Keeps prompts bounded and avoids huge payloads (Task 3). */
+/** Keeps prompts bounded and avoids huge payloads (ARCHITECTURE_MASTER task 13). */
 
 export const MAX_SYMPTOM_TEXT_CHARS = 8_000;
 export const MAX_FOLLOWUP_ANSWER_CHARS = 2_000;
 export const MAX_FOLLOWUP_QUESTION_COUNT = 12;
+/** Upper bound on symptom + all follow-up Q/A text (Zod superRefine on symptom-final). */
+export const MAX_TOTAL_SYMPTOM_PAYLOAD_CHARS = 50_000;
 
 export type SymptomPayloadCheck =
   | { ok: true }

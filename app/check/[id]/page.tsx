@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import CareActions from "@/components/care-actions";
 import ModelAssistNote from "@/components/model-assist-note";
 import ResultHelpfulFeedback from "@/components/result-helpful-feedback";
+import TriageExtras from "@/components/triage-extras";
 import StartSymptomCheckLink from "@/components/start-symptom-check-link";
 import UrgencyResultHero from "@/components/urgency-result-hero";
 import { requireServerUserId } from "@/lib/auth/server-user";
@@ -145,6 +146,8 @@ export default async function CheckDetailPage({ params }: PageProps) {
         </div>
 
         <ModelAssistNote confidence={confidence} reasoning={reasoning} />
+
+        <TriageExtras triage={triage} />
 
         <div>
           <p className="text-xs font-medium uppercase tracking-wide text-gray-500">

@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { correlationHeaders, getOrCreateRequestId } from "@/lib/request-correlation";
+import { ALLERGEN_INTRO_CHECKLIST } from "@/lib/allergen-checklist-cps";
 import { loadChildForUser } from "@/lib/load-child-for-user";
 import { createClientForRequest } from "@/lib/supabase/for-request";
 
@@ -89,7 +90,10 @@ export async function GET(request: Request, context: RouteContext) {
   if (error) {
     if (isMissingTableError(error, "allergen_introductions")) {
       return NextResponse.json(
-        { allergen_introductions: [] },
+        {
+          allergen_introductions: [],
+          allergen_introduction_checklist: ALLERGEN_INTRO_CHECKLIST,
+        },
         { headers: correlationHeaders(requestId) }
       );
     }
@@ -105,7 +109,10 @@ export async function GET(request: Request, context: RouteContext) {
   );
 
   return NextResponse.json(
-    { allergen_introductions },
+    {
+      allergen_introductions,
+      allergen_introduction_checklist: ALLERGEN_INTRO_CHECKLIST,
+    },
     { headers: correlationHeaders(requestId) }
   );
 }

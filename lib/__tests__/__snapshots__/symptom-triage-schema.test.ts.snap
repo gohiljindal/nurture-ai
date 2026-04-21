@@ -1,0 +1,44 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`symptomTriageResultSchema (task 40) > parses a minimal valid API triage payload 1`] = `
+{
+  "confidence": "medium",
+  "decision_source": "ai",
+  "disclaimer": "Not medical advice.",
+  "reasoning": "Because test.",
+  "recommended_action": "Watch at home",
+  "red_flags": [],
+  "rule_reason": null,
+  "summary": "Test summary",
+  "urgency": "monitor_home",
+}
+`;
+
+exports[`symptomTriageResultSchema (task 40) > parses optional structured fields 1`] = `
+{
+  "confidence": "medium",
+  "decision_diff": {
+    "baseline_urgency": "monitor_home",
+    "final_urgency": "urgent_doctor",
+    "summary": "Follow-up changed urgency.",
+  },
+  "decision_factors": [
+    "Age",
+  ],
+  "decision_source": "ai",
+  "disclaimer": "Not medical advice.",
+  "immediate_actions": [
+    "Call 811",
+  ],
+  "reasoning": "Because test.",
+  "recommended_action": "Watch at home",
+  "red_flags": [],
+  "rule_reason": null,
+  "summary": "Test summary",
+  "urgency": "monitor_home",
+  "urgency_score": 42,
+  "watch_next": [
+    "Fever",
+  ],
+}
+`;

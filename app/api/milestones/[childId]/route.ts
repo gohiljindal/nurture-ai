@@ -12,6 +12,7 @@ import {
   type MilestoneDomain,
   type MilestoneStatus,
 } from "@/lib/milestone-engine";
+import { buildMilestoneDelayGuidance } from "@/lib/milestone-delay-guidance";
 import { prisma } from "@/lib/prisma";
 
 const VALID_STATUSES: MilestoneStatus[] = [
@@ -105,6 +106,8 @@ export async function GET(request: Request, context: RouteContext) {
     ageMonths
   );
 
+  const delay_guidance = buildMilestoneDelayGuidance(overview, age_groups);
+
   return NextResponse.json(
     {
       child: {
@@ -117,6 +120,7 @@ export async function GET(request: Request, context: RouteContext) {
       overview,
       age_groups,
       domain_summaries,
+      delay_guidance,
     },
     { headers: correlationHeaders(requestId) }
   );

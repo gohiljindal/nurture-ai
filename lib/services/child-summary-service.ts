@@ -5,9 +5,12 @@
 import { prisma } from "@/lib/prisma";
 import { calculateAgeInMonths, getNextVaccine } from "@/lib/child-age";
 import { getAgeExpectation } from "@/lib/get-age-expectation";
-import { parseSymptomTriageResult } from "@/lib/symptom-triage-result";
 import type { ChildProfileRow } from "@/lib/services/child-service";
-import type { ChildProfileCheckRow, DashboardSymptomCheckRow } from "@/lib/services/symptom-check-service";
+import {
+  triageFromStoredRow,
+  type ChildProfileCheckRow,
+  type DashboardSymptomCheckRow,
+} from "@/lib/services/symptom-check-service";
 
 /** Prisma: P1001 = cannot reach database server */
 function isPrismaUnreachable(e: unknown): boolean {
@@ -66,25 +69,33 @@ function toChildProfileRow(c: {
   };
 }
 
-function mapToChildProfileCheckRow(r: {
-  id: string;
-  urgency: string;
-  createdAt: Date;
-  inputText: string;
-  aiResponse: unknown;
-  decisionSource: string | null;
-  ruleReason: string | null;
-}): ChildProfileCheckRow {
+function mapToChildProfileCheckRow(
+  r: {
+    id: string;
+    urgency: string;
+    createdAt: Date;
+    inputText: string;
+    aiResponse: unknown;
+    decisionSource: string | null;
+    ruleReason: string | null;
+  },
+  childDateOfBirth: string
+): ChildProfileCheckRow {
   return {
     id: r.id,
     urgency: r.urgency,
     created_at: iso(r.createdAt),
     input_text: r.inputText,
-    triage: parseSymptomTriageResult(r.aiResponse, {
-      urgency: r.urgency,
-      decisionSource: r.decisionSource,
-      ruleReason: r.ruleReason,
-    }),
+    triage: triageFromStoredRow(
+      r.aiResponse,
+      {
+        urgency: r.urgency,
+        decisionSource: r.decisionSource,
+        ruleReason: r.ruleReason,
+      },
+      r.inputText,
+      childDateOfBirth
+    ),
   };
 }
 
@@ -97,7 +108,7 @@ function mapToDashboardSymptomCheckRow(r: {
   aiResponse: unknown;
   decisionSource: string | null;
   ruleReason: string | null;
-  child: { name: string };
+  child: { name: string; dateOfBirth: Date };
 }): DashboardSymptomCheckRow {
   return {
     id: r.id,
@@ -106,11 +117,16 @@ function mapToDashboardSymptomCheckRow(r: {
     created_at: iso(r.createdAt),
     child_id: r.childId,
     children: { name: r.child.name },
-    triage: parseSymptomTriageResult(r.aiResponse, {
-      urgency: r.urgency,
-      decisionSource: r.decisionSource,
-      ruleReason: r.ruleReason,
-    }),
+    triage: triageFromStoredRow(
+      r.aiResponse,
+      {
+        urgency: r.urgency,
+        decisionSource: r.decisionSource,
+        ruleReason: r.ruleReason,
+      },
+      r.inputText,
+      formatDateOnly(r.child.dateOfBirth)
+    ),
   };
 }
 
@@ -184,7 +200,9 @@ export async function getChildTimelineSummaryForUser(
     }
 
     const profile = toChildProfileRow(c);
-    const recent_checks = c.symptomChecks.map(mapToChildProfileCheckRow);
+    const recent_checks = c.symptomChecks.map((row) =>
+      mapToChildProfileCheckRow(row, profile.date_of_birth)
+    );
 
     const summary = enrichChildSummary(
       profile,
@@ -243,14 +261,16 @@ export async function getDashboardHomeSummaryForUser(
         orderBy: { createdAt: "desc" },
         take: 5,
         include: {
-          child: { select: { name: true } },
+          child: { select: { name: true, dateOfBirth: true } },
         },
       }),
     ]);
 
     const children: DashboardChildSummary[] = childRows.map((c) => {
       const profile = toChildProfileRow(c);
-      const recent_checks = c.symptomChecks.map(mapToChildProfileCheckRow);
+      const recent_checks = c.symptomChecks.map((row) =>
+        mapToChildProfileCheckRow(row, profile.date_of_birth)
+      );
       return enrichChildSummary(profile, recent_checks, c._count.childVaccines);
     });
 

@@ -5,6 +5,7 @@ import { useEffect, useRef, useState } from "react";
 import CareActions from "@/components/care-actions";
 import ModelAssistNote from "@/components/model-assist-note";
 import ResultHelpfulFeedback from "@/components/result-helpful-feedback";
+import TriageExtras from "@/components/triage-extras";
 import UrgencyResultHero from "@/components/urgency-result-hero";
 import { createClient } from "@/lib/supabase/client";
 import type { SymptomTriageApiPayload, SymptomTriageResult } from "@/lib/symptom-triage-result";
@@ -569,9 +570,11 @@ export default function CheckSymptomPage() {
 
               <ModelAssistNote confidence={result.confidence} reasoning={result.reasoning} />
 
+              <TriageExtras triage={result} />
+
               <div className="rounded-xl border border-slate-200 bg-white p-5">
                 <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">
-                  Watch for
+                  Red flags to watch for
                 </p>
                 <ul className="mt-3 list-disc space-y-2 pl-5 text-sm leading-relaxed text-slate-800">
                   {result.red_flags.map((flag, index) => (

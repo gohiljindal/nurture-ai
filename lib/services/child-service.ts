@@ -64,19 +64,66 @@ export async function listChildrenForUser(userId: string): Promise<{
   }
 
   try {
-    const rows = await prisma.child.findMany({
-      where: { userId },
-      orderBy: { createdAt: "desc" },
-    });
+    let rows: Array<{
+      id: string;
+      name: string;
+      photo_url: string | null;
+      date_of_birth: Date;
+      sex_at_birth: string | null;
+      is_premature: boolean;
+      gestational_age_weeks: number | null;
+      province: string | null;
+      created_at: Date;
+    }> = [];
+    try {
+      rows = await prisma.$queryRaw<
+      Array<{
+        id: string;
+        name: string;
+        photo_url: string | null;
+        date_of_birth: Date;
+        sex_at_birth: string | null;
+        is_premature: boolean;
+        gestational_age_weeks: number | null;
+        province: string | null;
+        created_at: Date;
+      }>
+    >`
+      select distinct c.id::text, c.name, c.photo_url, c.date_of_birth, c.sex_at_birth, c.is_premature, c.gestational_age_weeks, c.province, c.created_at
+      from children c
+      left join child_accesses ca on ca.child_id = c.id and ca.user_id = ${userId}::uuid
+      where c.user_id = ${userId}::uuid or ca.id is not null
+      order by c.created_at desc
+    `;
+    } catch {
+      rows = [];
+    }
+    if (rows.length === 0) {
+      const ownedRows = await prisma.child.findMany({
+        where: { userId },
+        orderBy: { createdAt: "desc" },
+      });
+      rows = ownedRows.map((c) => ({
+        id: c.id,
+        name: c.name,
+        photo_url: c.photoUrl,
+        date_of_birth: c.dateOfBirth,
+        sex_at_birth: c.sexAtBirth,
+        is_premature: c.isPremature,
+        gestational_age_weeks: c.gestationalAgeWeeks,
+        province: c.province,
+        created_at: c.createdAt,
+      }));
+    }
 
     const mapped: DashboardChildRow[] = rows.map((c) => ({
       id: c.id,
       name: c.name,
-      photo_url: c.photoUrl,
-      date_of_birth: formatDateOnly(c.dateOfBirth),
-      sex_at_birth: c.sexAtBirth,
-      is_premature: c.isPremature,
-      gestational_age_weeks: c.gestationalAgeWeeks,
+      photo_url: c.photo_url,
+      date_of_birth: formatDateOnly(c.date_of_birth),
+      sex_at_birth: c.sex_at_birth,
+      is_premature: c.is_premature,
+      gestational_age_weeks: c.gestational_age_weeks,
       province: c.province,
     }));
 

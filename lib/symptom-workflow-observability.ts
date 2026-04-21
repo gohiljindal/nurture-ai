@@ -12,6 +12,8 @@ export type SymptomWorkflowOutcome = {
   urgency?: string | null;
   /** decision_source when applicable */
   decisionSource?: string | null;
+  /** Safety rule id when decision_source is safety_rule (no PII) */
+  ruleReason?: string | null;
   /** Stable machine-readable reason (e.g. validation_failed, rate_limited) */
   errorCode?: string | null;
   /** Branch name for metrics (e.g. safety_shortcircuit, followup_questions_ai) */
@@ -45,6 +47,7 @@ function logEnd(
     httpStatus: outcome.httpStatus,
     urgency: outcome.urgency ?? null,
     decisionSource: outcome.decisionSource ?? null,
+    ruleReason: outcome.ruleReason ?? null,
     errorCode: outcome.errorCode ?? null,
     path: outcome.path ?? null,
     ts: new Date().toISOString(),
@@ -70,6 +73,7 @@ export function createSymptomWorkflowObserver(requestId: string, route: SymptomR
     httpStatus: 500,
     urgency: null,
     decisionSource: null,
+    ruleReason: null,
     errorCode: null,
     path: null,
   };

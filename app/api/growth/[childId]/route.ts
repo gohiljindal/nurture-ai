@@ -225,6 +225,13 @@ export async function GET(request: Request, context: RouteContext) {
 
   const latest_summary = buildLatestSummary(measurements, dob, sex);
 
+  const percentile_table = measurementsWithPercentiles.map((m) => ({
+    measured_at: m.measured_at,
+    weight_percentile: m.percentiles.weight?.percentile ?? null,
+    height_percentile: m.percentiles.height?.percentile ?? null,
+    head_percentile: m.percentiles.head?.percentile ?? null,
+  }));
+
   return NextResponse.json(
     {
       child: {
@@ -237,6 +244,7 @@ export async function GET(request: Request, context: RouteContext) {
       measurements: measurementsWithPercentiles,
       chart_data,
       latest_summary,
+      percentile_table,
     },
     { headers: correlationHeaders(requestId) }
   );

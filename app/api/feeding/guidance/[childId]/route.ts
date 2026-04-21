@@ -7,6 +7,7 @@ import {
   getSolidsReadiness,
   type FeedingStage,
 } from "@/lib/feeding-engine";
+import { ALLERGEN_INTRO_CHECKLIST } from "@/lib/allergen-checklist-cps";
 import { loadChildForUser } from "@/lib/load-child-for-user";
 import { getCorrectedAgeMonths } from "@/lib/milestone-engine";
 import { createClientForRequest } from "@/lib/supabase/for-request";
@@ -91,6 +92,7 @@ export async function GET(request: Request, context: RouteContext) {
       guidance: getFeedingGuidance(ageMonths, "breastfeeding"),
       solids_readiness: getSolidsReadiness(ageMonths),
       allergen_status: getAllergenStatus(introductions, ageMonths),
+      allergen_introduction_checklist: ALLERGEN_INTRO_CHECKLIST,
       current_stage,
       all_stages,
     },

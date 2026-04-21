@@ -1,0 +1,7 @@
+# Task 39 — staged Maestro smoke (install: https://maestro.mobile.dev/)
+# Run from apps/mobile: maestro test maestro/smoke.yaml
+appId: com.nurtureai.app
+---
+- launchApp
+- assertVisible: "NurtureAI"
+- assertVisible: "Welcome back"

@@ -1,0 +1,21 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Global web layout/scroll foundation for Expo Router screens */
+html,
+body,
+#root,
+[data-expo-root] {
+  height: 100%;
+  width: 100%;
+}
+
+body {
+  margin: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  background-color: #faf7ff;
+}

@@ -4,6 +4,7 @@ import {
   MAX_FOLLOWUP_ANSWER_CHARS,
   MAX_FOLLOWUP_QUESTION_COUNT,
   MAX_SYMPTOM_TEXT_CHARS,
+  MAX_TOTAL_SYMPTOM_PAYLOAD_CHARS,
 } from "@/lib/symptom-input-limits";
 
 /** Shared: format Zod failures for API JSON (first message + optional field map). */
@@ -57,7 +58,10 @@ export const createChildBodySchema = z
         const t = s.trim();
         return t === "" ? null : t;
       })
-      .refine((s) => s == null || s.length <= 40, "Sex at birth label is too long."),
+      .refine(
+        (s) => s == null || s === "male" || s === "female",
+        "Sex must be male or female."
+      ),
     is_premature: z.boolean(),
     gestational_age_weeks: z.preprocess(
       (v) => (v === "" || v === undefined ? null : v),
@@ -112,38 +116,56 @@ const followupPairSchema = z.object({
 });
 
 /** POST /api/symptom-followup */
-export const symptomFollowupBodySchema = z.object({
-  childId: z.string().uuid("Choose a valid child."),
-  symptomText: z
-    .string()
-    .trim()
-    .min(1, "Describe what you are seeing.")
-    .max(
-      MAX_SYMPTOM_TEXT_CHARS,
-      `Keep your description under ${MAX_SYMPTOM_TEXT_CHARS} characters.`
-    ),
-  disclaimerAccepted: z.boolean().optional(),
-});
+export const symptomFollowupBodySchema = z
+  .object({
+    childId: z.string().uuid("Choose a valid child."),
+    symptomText: z
+      .string()
+      .trim()
+      .min(1, "Describe what you are seeing.")
+      .max(
+        MAX_SYMPTOM_TEXT_CHARS,
+        `Keep your description under ${MAX_SYMPTOM_TEXT_CHARS} characters.`
+      ),
+    disclaimerAccepted: z.boolean().optional(),
+  })
+  .strict();
 
 export type SymptomFollowupBody = z.infer<typeof symptomFollowupBodySchema>;
 
 /** POST /api/symptom-final */
-export const symptomFinalBodySchema = z.object({
-  childId: z.string().uuid("Choose a valid child."),
-  symptomText: z
-    .string()
-    .trim()
-    .min(1, "Describe what you are seeing.")
-    .max(
-      MAX_SYMPTOM_TEXT_CHARS,
-      `Keep your description under ${MAX_SYMPTOM_TEXT_CHARS} characters.`
-    ),
-  followupAnswers: z
-    .array(followupPairSchema)
-    .max(MAX_FOLLOWUP_QUESTION_COUNT, "Too many follow-up answers.")
-    .default([]),
-  disclaimerAccepted: z.boolean().optional(),
-});
+export const symptomFinalBodySchema = z
+  .object({
+    childId: z.string().uuid("Choose a valid child."),
+    symptomText: z
+      .string()
+      .trim()
+      .min(1, "Describe what you are seeing.")
+      .max(
+        MAX_SYMPTOM_TEXT_CHARS,
+        `Keep your description under ${MAX_SYMPTOM_TEXT_CHARS} characters.`
+      ),
+    followupAnswers: z
+      .array(followupPairSchema)
+      .max(MAX_FOLLOWUP_QUESTION_COUNT, "Too many follow-up answers.")
+      .default([]),
+    disclaimerAccepted: z.boolean().optional(),
+  })
+  .strict()
+  .superRefine((data, ctx) => {
+    const qa = data.followupAnswers.reduce(
+      (sum, row) => sum + row.question.length + row.answer.length,
+      0
+    );
+    const total = data.symptomText.length + qa;
+    if (total > MAX_TOTAL_SYMPTOM_PAYLOAD_CHARS) {
+      ctx.addIssue({
+        code: "custom",
+        message: `Combined symptom text and follow-up answers are too large (max ${MAX_TOTAL_SYMPTOM_PAYLOAD_CHARS} characters).`,
+        path: ["symptomText"],
+      });
+    }
+  });
 
 export type SymptomFinalBody = z.infer<typeof symptomFinalBodySchema>;
 
