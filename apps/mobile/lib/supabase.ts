@@ -6,11 +6,26 @@ import { Platform } from "react-native";
 const url = process.env.EXPO_PUBLIC_SUPABASE_URL?.trim();
 const anonKey = process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY?.trim();
 
+/**
+ * `expo export --platform web` runs static rendering in Node without your local `.env`.
+ * `createClient("", "")` throws (supabaseUrl is required). Use valid-shaped placeholders
+ * so the bundle step completes; set EXPO_PUBLIC_* on Vercel so production clients get real values.
+ */
+const BUILD_FALLBACK_URL = "https://placeholder.supabase.co";
+const BUILD_FALLBACK_ANON =
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIn0.placeholder";
+
 if (!url || !anonKey) {
   console.warn(
-    "[supabase] Missing EXPO_PUBLIC_SUPABASE_URL or EXPO_PUBLIC_SUPABASE_ANON_KEY."
+    "[supabase] Missing EXPO_PUBLIC_SUPABASE_URL or EXPO_PUBLIC_SUPABASE_ANON_KEY — using build placeholders. Add them in Vercel → Environment Variables for a working app."
   );
 }
+
+const resolvedUrl = url || BUILD_FALLBACK_URL;
+const resolvedAnon = anonKey || BUILD_FALLBACK_ANON;
+
+/** True when real env vars are present at bundle time (set on Vercel for production). */
+export const isSupabaseConfigured = Boolean(url && anonKey);
 
 // expo-secure-store is native-only. On web use localStorage in the browser; during
 // static SSR (Node) there is no localStorage — use a tiny in-memory store so export/SSR does not crash.
@@ -49,7 +64,7 @@ const storage =
         removeItem: (key: string) => SecureStore.deleteItemAsync(key),
       };
 
-export const supabase = createClient(url ?? "", anonKey ?? "", {
+export const supabase = createClient(resolvedUrl, resolvedAnon, {
   auth: {
     storage,
     autoRefreshToken: true,
