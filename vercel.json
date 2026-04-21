@@ -1,5 +1,6 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
+  "framework": null,
   "installCommand": "cd apps/mobile && npm ci",
   "buildCommand": "cd apps/mobile && npm run build:web",
   "outputDirectory": "apps/mobile/dist"
