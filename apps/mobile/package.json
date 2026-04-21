@@ -11,6 +11,7 @@
     "android": "cross-env NODE_OPTIONS=--dns-result-order=ipv4first EXPO_NO_TELEMETRY=1 expo start --offline --android --port 8083",
     "ios": "cross-env NODE_OPTIONS=--dns-result-order=ipv4first EXPO_NO_TELEMETRY=1 expo start --offline --ios",
     "web": "cross-env NODE_OPTIONS=--dns-result-order=ipv4first EXPO_NO_TELEMETRY=1 expo start --offline --web",
+    "build:web": "cross-env NODE_OPTIONS=--dns-result-order=ipv4first expo export --platform web",
     "typecheck": "tsc --noEmit",
     "verify": "npm run typecheck",
     "eas:init": "npx eas-cli init",
