@@ -12,7 +12,9 @@ const CORS_HEADERS = {
 /**
  * Reflect `Origin` for browser cross-origin API calls (Expo web → Next API).
  * Allows any http(s) localhost / 127.0.0.1 port (Metro picks 8081, 8083, 8084, …).
- * Optional `CORS_ALLOWED_ORIGINS` (comma-separated) for tunnel / staging hosts.
+ * Allows https://*.vercel.app when Expo web is deployed on Vercel (separate project from API).
+ * Optional `CORS_ALLOWED_ORIGINS` (comma-separated) for custom domains / extra hosts.
+ * Set `CORS_ALLOW_VERCEL_APP=false` to disable the *.vercel.app rule (stricter).
  */
 function getCorsOrigin(request: NextRequest): string | null {
   const origin = request.headers.get("origin");
@@ -26,6 +28,13 @@ function getCorsOrigin(request: NextRequest): string | null {
 
   try {
     const u = new URL(origin);
+    const allowVercel =
+      process.env.CORS_ALLOW_VERCEL_APP !== "false" &&
+      u.protocol === "https:" &&
+      (u.hostname === "vercel.app" || u.hostname.endsWith(".vercel.app"));
+    if (allowVercel) {
+      return origin;
+    }
     if (
       (u.protocol === "http:" || u.protocol === "https:") &&
       (u.hostname === "localhost" || u.hostname === "127.0.0.1")
