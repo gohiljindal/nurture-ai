@@ -16,7 +16,7 @@
     "build:web": "cross-env NODE_OPTIONS=--dns-result-order=ipv4first expo export --platform web",
     "typecheck": "tsc --noEmit",
     "verify": "npm run typecheck",
-    "postinstall": "node ./scripts/patch-cmake-windows.js",
+    "postinstall": "node -e \"const fs=require('fs');const p='./scripts/patch-cmake-windows.js'; if(fs.existsSync(p)){require(p)} else {console.log('[postinstall] skip patch-cmake-windows.js (file not present)')}\"",
     "eas:init": "npx eas-cli init",
     "eas:login": "npx eas-cli login",
     "eas:build:ios": "npx eas-cli build --platform ios",
