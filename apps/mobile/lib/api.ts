@@ -25,6 +25,9 @@ import type {
 } from "./types";
 
 // ─── Core fetch ───────────────────────────────────────────────────────────────
+const WEB_PROD_API_FALLBACK =
+  process.env.EXPO_PUBLIC_API_FALLBACK_URL?.trim() ||
+  "https://nurtureai-api-deploy.vercel.app";
 
 function getApiBaseUrl(): string {
   // Prefer 127.0.0.1 over "localhost" on Windows — some setups resolve localhost to IPv6 first and stall.
@@ -42,7 +45,9 @@ function getApiBaseUrl(): string {
         window.location.hostname === "localhost" ||
         window.location.hostname === "127.0.0.1";
       if (hostIsLocal && !runtimeHostIsLocal) {
-        return window.location.origin;
+        // Static web deploys on Vercel often don't host /api routes on the same domain.
+        // Prefer explicit API fallback origin when available.
+        return WEB_PROD_API_FALLBACK.replace(/\/$/, "");
       }
     } catch {
       /* ignore invalid URL */
@@ -123,7 +128,10 @@ async function parseJson<T>(res: Response): Promise<ApiResult<T>> {
   try {
     body = await res.json();
   } catch {
-    return { ok: false, error: `HTTP ${res.status}: unexpected response format` };
+    return {
+      ok: false,
+      error: `HTTP ${res.status} at ${res.url}: unexpected response format (endpoint likely missing or non-JSON).`,
+    };
   }
   if (!res.ok) {
     const msg = (body as { error?: string })?.error ?? `Request failed (${res.status})`;
