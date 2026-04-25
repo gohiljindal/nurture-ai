@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useState } from "react";
 import { createClient } from "@/lib/supabase/client";
+import { isSupabasePublicEnvConfigured } from "@/lib/supabase/env";
 import { useRouter } from "next/navigation";
 
 export default function SignupPage() {
@@ -15,27 +16,46 @@ export default function SignupPage() {
   const [message, setMessage] = useState("");
   const [isError, setIsError] = useState(false);
 
+  const toFriendlyAuthError = (value: unknown) => {
+    const msg = value instanceof Error ? value.message : String(value ?? "");
+    if (/failed to fetch|network request failed|networkerror|load failed/i.test(msg)) {
+      return "Could not reach Supabase. In Vercel, set NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY, redeploy, then try again.";
+    }
+    return msg || "Something went wrong. Please try again.";
+  };
+
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!isSupabasePublicEnvConfigured()) {
+      setIsError(true);
+      setMessage(
+        "Supabase is not configured for this deployment. Add NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY in Vercel Environment Variables, then redeploy."
+      );
+      return;
+    }
     setLoading(true);
     setMessage("");
     setIsError(false);
+    try {
+      const { error } = await supabase.auth.signUp({
+        email,
+        password,
+      });
 
-    const { error } = await supabase.auth.signUp({
-      email,
-      password,
-    });
+      if (error) {
+        setIsError(true);
+        setMessage(toFriendlyAuthError(error));
+        return;
+      }
 
-    setLoading(false);
-
-    if (error) {
+      router.push("/login?registered=1");
+      router.refresh();
+    } catch (e) {
       setIsError(true);
-      setMessage(error.message);
-      return;
+      setMessage(toFriendlyAuthError(e));
+    } finally {
+      setLoading(false);
     }
-
-    router.push("/login?registered=1");
-    router.refresh();
   };
 
   return (

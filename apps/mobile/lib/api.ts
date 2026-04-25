@@ -1,3 +1,6 @@
+import * as Device from "expo-device";
+import { Platform } from "react-native";
+
 import { supabase } from "./supabase";
 import type {
   ApiResult,
@@ -25,8 +28,43 @@ import type {
 
 function getApiBaseUrl(): string {
   // Prefer 127.0.0.1 over "localhost" on Windows — some setups resolve localhost to IPv6 first and stall.
-  const base = process.env.EXPO_PUBLIC_API_URL?.trim() || "http://127.0.0.1:3000";
-  return base.replace(/\/$/, "");
+  let base = process.env.EXPO_PUBLIC_API_URL?.trim() || "http://127.0.0.1:3000";
+  base = base.replace(/\/$/, "");
+
+  // Web deploy fallback: if the bundle was built with localhost API base but runs on a
+  // non-localhost domain (e.g. Vercel), call same-origin `/api/*` instead of localhost.
+  if (Platform.OS === "web" && typeof window !== "undefined") {
+    try {
+      const configured = new URL(base);
+      const hostIsLocal =
+        configured.hostname === "localhost" || configured.hostname === "127.0.0.1";
+      const runtimeHostIsLocal =
+        window.location.hostname === "localhost" ||
+        window.location.hostname === "127.0.0.1";
+      if (hostIsLocal && !runtimeHostIsLocal) {
+        return window.location.origin;
+      }
+    } catch {
+      /* ignore invalid URL */
+    }
+  }
+
+  // Android emulator: 127.0.0.1 / localhost is the emulator itself, not the dev machine. Map to 10.0.2.2 (host loopback).
+  // Use expo-device (not expo-constants) — some emulators incorrectly report isDevice=true via Constants.
+  // Physical device: Device.isDevice === true — set EXPO_PUBLIC_API_URL to your PC LAN IP (e.g. http://192.168.x.x:3000).
+  if (Platform.OS === "android" && !Device.isDevice) {
+    try {
+      const u = new URL(base);
+      if (u.hostname === "localhost" || u.hostname === "127.0.0.1") {
+        u.hostname = "10.0.2.2";
+        return u.toString().replace(/\/$/, "");
+      }
+    } catch {
+      /* ignore invalid URL */
+    }
+  }
+
+  return base;
 }
 
 export async function apiFetch(path: string, init: RequestInit = {}): Promise<Response> {
@@ -45,7 +83,15 @@ export async function apiFetch(path: string, init: RequestInit = {}): Promise<Re
   const fullPath = path.startsWith("/") ? path : `/${path}`;
   const url = `${getApiBaseUrl()}${fullPath}`;
 
-  const timeoutMs = 90_000;
+  // Default 45s — long enough for most API calls; avoids 90s waits when the server/DB is down.
+  // Override: EXPO_PUBLIC_API_TIMEOUT_MS=120000 (min 5000, max 180000).
+  const parsedTimeout = Number(process.env.EXPO_PUBLIC_API_TIMEOUT_MS);
+  const timeoutMs =
+    Number.isFinite(parsedTimeout) &&
+    parsedTimeout >= 5_000 &&
+    parsedTimeout <= 180_000
+      ? parsedTimeout
+      : 45_000;
   const controller = new AbortController();
   const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
 
@@ -56,14 +102,14 @@ export async function apiFetch(path: string, init: RequestInit = {}): Promise<Re
     if (name === "AbortError") {
       const base = getApiBaseUrl();
       throw new Error(
-        `Request timed out after ${timeoutMs / 1000}s (${base}). Open ${base}/api/health in a browser — if that fails, run "npm run dev" in the nurtureai folder. If health is OK but other calls hang, PostgreSQL is probably unreachable: start Docker/local DB, check DATABASE_URL in nurtureai/.env, and add connect_timeout=15 to the URL so failures surface faster.`
+        `Request timed out after ${timeoutMs / 1000}s (${base}). Check ${base}/api/health in a browser. If that fails: run "npm run dev" in the nurtureai folder. If health works but data calls hang: start Postgres (e.g. "docker compose up -d" in nurtureai), ensure DATABASE_URL in nurtureai/.env includes connect_timeout=15 (see nurtureai/.env.example), then restart "npm run dev".`
       );
     }
     const msg = e instanceof Error ? e.message : String(e);
     if (/failed to fetch|networkerror|load failed/i.test(msg)) {
       const base = getApiBaseUrl();
       throw new Error(
-        `Could not reach ${url} (API base: ${base}). From the nurtureai folder run: npm run dev — then reload the app. If you changed EXPO_PUBLIC_API_URL, restart Expo.`
+        `Could not reach ${url} (API base: ${base}). Local dev: run "npm run dev" in the nurtureai folder, then reload. Vercel web: set EXPO_PUBLIC_API_URL to your Next API origin (or same-domain app URL), redeploy, and clear cache. If you changed EXPO_PUBLIC_API_URL, restart Expo.`
       );
     }
     throw e;

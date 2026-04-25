@@ -10,6 +10,13 @@ const BUILD_FALLBACK_URL = "https://placeholder.supabase.co";
 const BUILD_FALLBACK_ANON_KEY =
   "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.e30.invalid-missing-public-supabase-env";
 
+/** True when real public Supabase env vars are available at build/runtime. */
+export function isSupabasePublicEnvConfigured(): boolean {
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL?.trim();
+  const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY?.trim();
+  return Boolean(url && anonKey);
+}
+
 export function getSupabasePublicEnv(): { url: string; anonKey: string } {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL?.trim();
   const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY?.trim();
