@@ -1,8 +1,5 @@
 import { NextResponse, type NextRequest } from "next/server";
 
-import { updateSession } from "@/lib/supabase/middleware";
-import { buildHealthPayload, buildMetaPayload } from "@/lib/status-contract";
-
 const CORS_HEADERS = {
   "Access-Control-Allow-Methods": "GET,POST,PATCH,DELETE,OPTIONS",
   "Access-Control-Allow-Headers": "Content-Type, Authorization",
@@ -64,7 +61,11 @@ export async function proxy(request: NextRequest) {
 
   // Liveness + version — skip Supabase session work (fast probes for load balancers / mobile).
   if (request.method === "GET" && pathname === "/api/health") {
-    const res = NextResponse.json(buildHealthPayload());
+    const res = NextResponse.json({
+      ok: true,
+      service: "nurtureai-api",
+      timestamp: new Date().toISOString(),
+    });
     if (corsOrigin) {
       res.headers.set("Access-Control-Allow-Origin", corsOrigin);
       Object.entries(CORS_HEADERS).forEach(([k, v]) => res.headers.set(k, v));
@@ -72,7 +73,17 @@ export async function proxy(request: NextRequest) {
     return res;
   }
   if (request.method === "GET" && pathname === "/api/meta") {
-    const res = NextResponse.json(buildMetaPayload());
+    const res = NextResponse.json({
+      service: "nurtureai-api",
+      // Avoid importing package.json in Edge runtime.
+      name: "nurtureai",
+      version: process.env.npm_package_version ?? "unknown",
+      node_env: process.env.NODE_ENV ?? "development",
+      git_sha:
+        process.env.VERCEL_GIT_COMMIT_SHA?.trim() ||
+        process.env.GIT_SHA?.trim() ||
+        null,
+    });
     if (corsOrigin) {
       res.headers.set("Access-Control-Allow-Origin", corsOrigin);
       Object.entries(CORS_HEADERS).forEach(([k, v]) => res.headers.set(k, v));
@@ -80,8 +91,9 @@ export async function proxy(request: NextRequest) {
     return res;
   }
 
-  // Normal request — refresh Supabase session then add CORS headers
-  const response = await updateSession(request);
+  // Normal request — pass-through + CORS headers.
+  // (Edge hotfix) Avoid importing Node-incompatible modules in proxy runtime.
+  const response = NextResponse.next();
 
   if (pathname.startsWith("/api/") && corsOrigin) {
     response.headers.set("Access-Control-Allow-Origin", corsOrigin);
